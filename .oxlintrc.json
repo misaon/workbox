@@ -1,0 +1,58 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "options": { "typeAware": true },
+  "plugins": ["typescript", "unicorn", "oxc", "import", "promise", "node"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "pedantic": "error",
+    "perf": "error",
+    "style": "error",
+    "restriction": "warn"
+  },
+  "ignorePatterns": ["**/dist/**", "**/paraglide/**", "**/coverage/**"],
+  "rules": {
+    "no-console": "error",
+    "import/no-default-export": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/consistent-type-imports": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }],
+    "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
+    "id-length": ["error", { "exceptions": ["z"] }],
+    "no-duplicate-imports": ["error", { "allowSeparateTypeImports": true }],
+    "one-var": ["error", "never"],
+    "import/exports-last": "off",
+    "import/group-exports": "off",
+    "import/no-named-export": "off",
+    "import/no-relative-parent-imports": "off",
+    "import/prefer-default-export": "off",
+    "no-ternary": "off",
+    "sort-imports": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx"],
+      "plugins": ["jest"],
+      "rules": {
+        "jest/no-disabled-tests": "error",
+        "jest/no-focused-tests": "error",
+        "max-lines-per-function": "off",
+        "max-statements": "off",
+        "no-magic-numbers": "off"
+      }
+    },
+    {
+      "files": ["**/*.config.ts", "**/*.config.js", "**/*.config.mjs"],
+      "rules": { "import/no-default-export": "off" }
+    },
+    {
+      "files": ["apps/web/**/*.tsx", "apps/web/**/*.ts"],
+      "plugins": ["react", "jsx-a11y", "vitest"]
+    },
+    {
+      "files": ["apps/cli/src/output/**"],
+      "rules": { "no-console": "off" }
+    }
+  ]
+}

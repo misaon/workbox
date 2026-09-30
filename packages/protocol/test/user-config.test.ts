@@ -1,18 +1,14 @@
 import { describe, expect, test } from 'bun:test';
 
-import {
-  DEFAULT_USER_CONFIG,
-  parseUserConfig,
-  userConfigJsonSchema,
-  type UserConfig,
-} from '../src/index.ts';
+import { DEFAULT_USER_CONFIG, parseUserConfig, userConfigJsonSchema } from '../src/index.ts';
+import type { UserConfig } from '../src/index.ts';
 
 /** The documented defaults, written by hand so they do not depend on the code under test. */
 const EXPECTED_DEFAULTS: UserConfig = {
+  harness: { claude: { pinSystemBinary: false } },
   locale: 'en',
   notifications: { desktop: true, sound: true },
   office: { renderer: 'webgl' },
-  harness: { claude: { pinSystemBinary: false } },
 };
 
 /** Parses `input` and fails the test with the parser's own message when the input is rejected. */
@@ -22,6 +18,33 @@ function parseOrThrow(input: unknown): UserConfig {
     throw new Error(result.message);
   }
   return result.value;
+}
+
+/** Parses `input` and fails the test when the input is accepted; returns the rejection message. */
+function rejectionOf(input: unknown): string {
+  const result = parseUserConfig(input);
+  if (result.ok) {
+    throw new Error('Expected the config to be rejected, but it was accepted');
+  }
+  return result.message;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+/** Reads the object stored under `key` and fails the test when it is missing or not an object. */
+function objectAt(parent: Readonly<Record<string, unknown>>, key: string): Record<string, unknown> {
+  const value = parent[key];
+  if (!isRecord(value)) {
+    throw new Error(`Expected an object under "${key}"`);
+  }
+  return value;
+}
+
+/** Reads the `default` that a JSON Schema `properties` map advertises for the property `name`. */
+function advertisedDefault(properties: Readonly<Record<string, unknown>>, name: string): unknown {
+  return objectAt(properties, name)['default'];
 }
 
 describe('DEFAULT_USER_CONFIG', () => {
@@ -40,26 +63,19 @@ describe('DEFAULT_USER_CONFIG', () => {
 
 describe('parseUserConfig', () => {
   test('fills defaults for an empty object', () => {
-    const result = parseUserConfig({});
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.value).toEqual(DEFAULT_USER_CONFIG);
-    }
+    expect(parseOrThrow({})).toEqual(DEFAULT_USER_CONFIG);
   });
 
   test('accepts a full config', () => {
-    const result = parseUserConfig({
+    const config = parseOrThrow({
+      harness: { claude: { pinSystemBinary: true } },
       locale: 'cs',
       notifications: { desktop: false, sound: true },
       office: { renderer: 'webgpu' },
-      harness: { claude: { pinSystemBinary: true } },
     });
-    expect(result.ok).toBe(true);
-    if (result.ok) {
-      expect(result.value.locale).toBe('cs');
-      expect(result.value.office.renderer).toBe('webgpu');
-      expect(result.value.harness.claude.pinSystemBinary).toBe(true);
-    }
+    expect(config.locale).toBe('cs');
+    expect(config.office.renderer).toBe('webgpu');
+    expect(config.harness.claude.pinSystemBinary).toBe(true);
   });
 
   test('fills the missing leaf of a partial notifications section', () => {
@@ -112,18 +128,11 @@ describe('parseUserConfig', () => {
   });
 
   test('rejects unknown keys and names the key', () => {
-    const result = parseUserConfig({ colour: 'blue' });
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.message).toContain('colour');
-    }
+    expect(rejectionOf({ colour: 'blue' })).toContain('colour');
   });
 
   test('reports a nested error under its dotted path', () => {
-    expect(parseUserConfig({ office: { renderer: 'canvas' } })).toEqual({
-      ok: false,
-      message: expect.stringMatching(/^office\.renderer:/),
-    });
+    expect(rejectionOf({ office: { renderer: 'canvas' } })).toMatch(/^office\.renderer:/u);
   });
 
   test('rejects an unsupported locale', () => {
@@ -133,6 +142,7 @@ describe('parseUserConfig', () => {
 
   test('rejects non-objects', () => {
     expect(parseUserConfig('nope').ok).toBe(false);
+    // oxlint-disable-next-line unicorn/no-null -- null is the input under test
     expect(parseUserConfig(null).ok).toBe(false);
   });
 });
@@ -143,8 +153,8 @@ describe('userConfigJsonSchema', () => {
     expect(schema['$schema']).toBe('http://json-schema.org/draft-07/schema#');
     expect(schema['additionalProperties']).toBe(false);
     expect(schema['required']).toBeUndefined();
-    const properties = schema['properties'] as Record<string, unknown>;
-    expect(Object.keys(properties).sort()).toEqual([
+    const properties = objectAt(schema, 'properties');
+    expect(Object.keys(properties).toSorted()).toEqual([
       '$schema',
       'harness',
       'locale',
@@ -155,11 +165,12 @@ describe('userConfigJsonSchema', () => {
   });
 
   test('advertises the same defaults as DEFAULT_USER_CONFIG', () => {
-    const schema = userConfigJsonSchema();
-    const properties = schema['properties'] as Record<string, { default?: unknown }>;
-    expect(properties['locale']?.default).toBe(DEFAULT_USER_CONFIG.locale);
-    expect(properties['notifications']?.default).toEqual(DEFAULT_USER_CONFIG.notifications);
-    expect(properties['office']?.default).toEqual(DEFAULT_USER_CONFIG.office);
-    expect(properties['harness']?.default).toEqual(DEFAULT_USER_CONFIG.harness);
+    const properties = objectAt(userConfigJsonSchema(), 'properties');
+    expect(advertisedDefault(properties, 'locale')).toBe(DEFAULT_USER_CONFIG.locale);
+    expect(advertisedDefault(properties, 'notifications')).toEqual(
+      DEFAULT_USER_CONFIG.notifications,
+    );
+    expect(advertisedDefault(properties, 'office')).toEqual(DEFAULT_USER_CONFIG.office);
+    expect(advertisedDefault(properties, 'harness')).toEqual(DEFAULT_USER_CONFIG.harness);
   });
 });

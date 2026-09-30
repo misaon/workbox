@@ -4,7 +4,7 @@ import { PROTOCOL_VERSION, protocolMajor } from '../src/index.ts';
 
 describe('PROTOCOL_VERSION', () => {
   test('is a semver string', () => {
-    expect(PROTOCOL_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+    expect(PROTOCOL_VERSION).toMatch(/^\d+\.\d+\.\d+$/u);
   });
 
   test('protocolMajor extracts the major number', () => {
