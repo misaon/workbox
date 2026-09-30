@@ -8,7 +8,7 @@
     "pedantic": "error",
     "perf": "error",
     "style": "error",
-    "restriction": "warn"
+    "restriction": "off"
   },
   "ignorePatterns": ["**/dist/**", "**/paraglide/**", "**/coverage/**"],
   "rules": {
@@ -17,6 +17,7 @@
     "typescript/no-non-null-assertion": "error",
     "typescript/consistent-type-imports": "error",
     "unicorn/prefer-node-protocol": "error",
+    "typescript/no-explicit-any": "error",
     "capitalized-comments": ["error", "always", { "ignoreConsecutiveComments": true }],
     "func-style": ["error", "declaration", { "allowArrowFunctions": true }],
     "id-length": ["error", { "exceptions": ["z"] }],
@@ -25,10 +26,11 @@
     "import/exports-last": "off",
     "import/group-exports": "off",
     "import/no-named-export": "off",
-    "import/no-relative-parent-imports": "off",
+    "import/no-nodejs-modules": "off",
     "import/prefer-default-export": "off",
     "no-ternary": "off",
-    "sort-imports": "off"
+    "sort-imports": "off",
+    "sort-keys": "off"
   },
   "overrides": [
     {
