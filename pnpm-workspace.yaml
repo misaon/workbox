@@ -24,7 +24,11 @@ catalog:
   citty: ^0.2.2
   cspell: ^10.3.6
   knip: ^6.39.0
-  lefthook: ^2.1.15
+  # ^2.1.14, not ^2.1.15, on purpose: lefthook 2.1.0 to 2.1.14 were published by GitHub Actions with
+  # trusted-publisher provenance, but 2.1.15 (2026-09-29) came from a personal npm account without
+  # any attestation, so trustPolicy no-downgrade rejects it as a possible package takeover and pnpm
+  # resolves 2.1.14 instead. A later release that carries provenance again is picked up as usual.
+  lefthook: ^2.1.14
   markdownlint-cli2: ^0.23.3
   oxfmt: ^0.71.0
   oxlint: ^1.86.0

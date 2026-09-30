@@ -16,10 +16,15 @@
     "format:check": "oxfmt --check",
     "lint": "oxlint --type-aware --deny-warnings",
     "lint:fix": "oxlint --type-aware --fix",
+    "prepare": "lefthook install",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json"
   },
   "devDependencies": {
+    "@commitlint/cli": "catalog:",
+    "@commitlint/config-conventional": "catalog:",
+    "@commitlint/types": "catalog:",
+    "lefthook": "catalog:",
     "oxfmt": "catalog:",
     "oxlint": "catalog:",
     "oxlint-tsgolint": "catalog:",
