@@ -1,0 +1,23 @@
+{
+  "name": "@workbox/observability",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Structured logging, debug levels and secret redaction for Workbox.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@logtape/file": "catalog:",
+    "@logtape/logtape": "catalog:",
+    "@logtape/redaction": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}

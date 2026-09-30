@@ -173,6 +173,15 @@ catalogs:
     '@commitlint/types':
       specifier: ^21.2.3
       version: 21.2.3
+    '@logtape/file':
+      specifier: ^2.3.10
+      version: 2.3.10
+    '@logtape/logtape':
+      specifier: ^2.3.10
+      version: 2.3.10
+    '@logtape/redaction':
+      specifier: ^2.3.10
+      version: 2.3.10
     '@types/bun':
       specifier: ^1.4.2
       version: 1.4.2
@@ -226,6 +235,25 @@ importers:
       turbo:
         specifier: 'catalog:'
         version: 2.11.5
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
+  packages/observability:
+    dependencies:
+      '@logtape/file':
+        specifier: 'catalog:'
+        version: 2.3.10(@logtape/logtape@2.3.10)
+      '@logtape/logtape':
+        specifier: 'catalog:'
+        version: 2.3.10
+      '@logtape/redaction':
+        specifier: 'catalog:'
+        version: 2.3.10(@logtape/logtape@2.3.10)
+    devDependencies:
+      '@types/bun':
+        specifier: 'catalog:'
+        version: 1.4.2
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -337,6 +365,19 @@ packages:
   '@conventional-changelog/template@1.4.0':
     resolution: {integrity: sha512-aalGyl7dbB5PArRebDIX43ZvBlXrYm9uWzGJ26t+4SzJVPsOuvfILGGbw5X4yX7i50YEmJ8zvbiWnqH/AAnZqg==}
     engines: {node: '>=22'}
+
+  '@logtape/file@2.3.10':
+    resolution: {integrity: sha512-y3paHNFF/mSpjzVKar8T06hIN9A5z8qC4Wv9qJIvD4HgNCjodYUkAu7B3vf/hOUtOq5QDOOdP8By2AO4epsefQ==}
+    peerDependencies:
+      '@logtape/logtape': ^2.3.10
+
+  '@logtape/logtape@2.3.10':
+    resolution: {integrity: sha512-IdOrFCHMSGYz+fq7xrxKCjXxItHHdiVenNaHeFJhXOkaVXFAHCdrPPBQJvJVmYbAUY5PCP8kSMxY+GIoxkmwHA==}
+
+  '@logtape/redaction@2.3.10':
+    resolution: {integrity: sha512-vZDC4iUnXUtlhwnoawoKU0WJdqOQCbc7ckGlEr/h9Ztu3yUPV2IkrspzBJvBf5HLb/L7VVPPfnJwhhwjqioJwQ==}
+    peerDependencies:
+      '@logtape/logtape': ^2.3.10
 
   '@oxfmt/binding-android-arm-eabi@0.71.0':
     resolution: {integrity: sha512-l31EyBfB4egJeFua11aQFEUE9nnDtfpWCadqQovm0WL30t/yUHtdFl/5HyFXvd5xT8Ewh3U4TI9f30GowrQ1fw==}
@@ -1196,6 +1237,16 @@ snapshots:
       conventional-commits-parser: 7.1.2
 
   '@conventional-changelog/template@1.4.0': {}
+
+  '@logtape/file@2.3.10(@logtape/logtape@2.3.10)':
+    dependencies:
+      '@logtape/logtape': 2.3.10
+
+  '@logtape/logtape@2.3.10': {}
+
+  '@logtape/redaction@2.3.10(@logtape/logtape@2.3.10)':
+    dependencies:
+      '@logtape/logtape': 2.3.10
 
   '@oxfmt/binding-android-arm-eabi@0.71.0':
     optional: true
