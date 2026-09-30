@@ -1,0 +1,27 @@
+{
+  "name": "workbox-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workbox: an open-source, local-first orchestrator for AI coding agents, visualised as a pixel-art office.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/misaon/workbox.git"
+  },
+  "type": "module",
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12.8.1"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  }
+}

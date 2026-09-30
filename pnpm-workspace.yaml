@@ -1,0 +1,59 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+catalog:
+  '@babel/core': ^7.29.0
+  '@commitlint/cli': ^21.2.3
+  '@commitlint/config-conventional': ^21.2.3
+  '@commitlint/types': ^21.2.3
+  '@cspell/dict-cs-cz': ^3.0.8
+  '@inlang/paraglide-js': ^2.25.4
+  '@logtape/file': ^2.3.10
+  '@logtape/logtape': ^2.3.10
+  '@logtape/redaction': ^2.3.10
+  '@ls-lint/ls-lint': ^2.3.1
+  '@rolldown/plugin-babel': ^0.2.4
+  '@tailwindcss/vite': ^4.3.3
+  '@types/bun': ^1.4.2
+  '@types/react': ^19.3.0
+  '@types/react-dom': ^19.3.0
+  '@vitejs/plugin-react': ^6.1.1
+  '@vitest/browser-playwright': ^5.0.3
+  babel-plugin-react-compiler: ^1.0.0
+  citty: ^0.2.2
+  cspell: ^10.3.6
+  knip: ^6.39.0
+  lefthook: ^2.1.15
+  markdownlint-cli2: ^0.23.3
+  oxfmt: ^0.71.0
+  oxlint: ^1.86.0
+  oxlint-tsgolint: ^7.0.2003
+  playwright: ^1.63.0
+  react: ^19.3.0
+  react-dom: ^19.3.0
+  tailwindcss: ^4.3.3
+  turbo: ^2.11.5
+  typescript: ^7.0.2
+  vite: ^8.3.1
+  vitest: ^5.0.3
+  zod: ^4.6.5
+
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  - '@anthropic-ai/claude-agent-sdk'
+  # remove after 2026-10-01: turbo 2.11.5 and its platform binaries were published on 2026-09-28,
+  # so they are younger than minimumReleaseAge (3 days) until then.
+  - 'turbo@2.11.5'
+  - '@turbo/darwin-64@2.11.5'
+  - '@turbo/darwin-arm64@2.11.5'
+  - '@turbo/linux-64@2.11.5'
+  - '@turbo/linux-arm64@2.11.5'
+  - '@turbo/windows-64@2.11.5'
+  - '@turbo/windows-arm64@2.11.5'
+trustPolicy: no-downgrade
+blockExoticSubdeps: true
+strictDepBuilds: true
+allowBuilds:
+  lefthook: true
+  playwright: true
