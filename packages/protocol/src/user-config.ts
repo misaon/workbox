@@ -3,33 +3,49 @@ import * as z from 'zod';
 export const LOCALES = ['en', 'cs'] as const;
 export type Locale = (typeof LOCALES)[number];
 
+// Each section defaults to `schema.parse({})`, not to a literal. Zod 4 returns a `.default()` value
+// without parsing it, so a literal would repeat the leaf defaults and share its nested objects with
+// every parse. Parsing `{}` builds fresh objects from the leaf defaults each time.
+const notificationsSchema = z.strictObject({
+  desktop: z.boolean().default(true),
+  sound: z.boolean().default(true),
+});
+
+const officeSchema = z.strictObject({
+  renderer: z.enum(['webgl', 'webgpu']).default('webgl'),
+});
+
+const claudeHarnessSchema = z.strictObject({
+  pinSystemBinary: z.boolean().default(false),
+});
+
+const harnessSchema = z.strictObject({
+  claude: claudeHarnessSchema.default(() => claudeHarnessSchema.parse({})),
+});
+
 export const userConfigSchema = z.strictObject({
+  // Editors add a "$schema" key to JSON config files, so the strict root has to allow it.
+  $schema: z.string().optional(),
   locale: z.enum(LOCALES).default('en'),
-  notifications: z
-    .strictObject({
-      desktop: z.boolean().default(true),
-      sound: z.boolean().default(true),
-    })
-    .default({ desktop: true, sound: true }),
-  office: z
-    .strictObject({
-      renderer: z.enum(['webgl', 'webgpu']).default('webgl'),
-    })
-    .default({ renderer: 'webgl' }),
-  harness: z
-    .strictObject({
-      claude: z
-        .strictObject({
-          pinSystemBinary: z.boolean().default(false),
-        })
-        .default({ pinSystemBinary: false }),
-    })
-    .default({ claude: { pinSystemBinary: false } }),
+  notifications: notificationsSchema.default(() => notificationsSchema.parse({})),
+  office: officeSchema.default(() => officeSchema.parse({})),
+  harness: harnessSchema.default(() => harnessSchema.parse({})),
 });
 
 export type UserConfig = z.output<typeof userConfigSchema>;
 
-export const DEFAULT_USER_CONFIG: UserConfig = userConfigSchema.parse({});
+/** Freezes `value` and everything reachable from it, so shared defaults cannot be mutated. */
+function deepFreeze<T>(value: T): T {
+  if (typeof value === 'object' && value !== null) {
+    for (const nested of Object.values(value) as unknown[]) {
+      deepFreeze(nested);
+    }
+    Object.freeze(value);
+  }
+  return value;
+}
+
+export const DEFAULT_USER_CONFIG: UserConfig = deepFreeze(userConfigSchema.parse({}));
 
 export type ParseResult<T> = { readonly ok: true; readonly value: T } | { readonly ok: false; readonly message: string };
 
