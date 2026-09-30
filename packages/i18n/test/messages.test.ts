@@ -1,5 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 
+import czechMessages from '../messages/cs.json' with { type: 'json' };
+import englishMessages from '../messages/en.json' with { type: 'json' };
 import { getLocale, m, setLocale } from '../src/index.ts';
 
 // Paraglide types every message as the branded `LocalizedString`, so the tests widen the subject
@@ -23,8 +25,18 @@ describe('messages', () => {
 
   test('setLocale switches the global locale', async () => {
     await setLocale('cs', { reload: false });
-    expect<string>(m.app_title()).toBe('Workbox');
-    expect<string>(m.cli_doctor_check_git({}, { locale: getLocale() })).toBe('git');
-    await setLocale('en', { reload: false });
+    try {
+      expect(getLocale()).toBe('cs');
+      // No per-call locale: the text must come from the global locale.
+      expect<string>(m.cli_doctor_title()).toBe('Workbox doktor');
+    } finally {
+      await setLocale('en', { reload: false });
+    }
+  });
+});
+
+describe('message files', () => {
+  test('English and Czech define exactly the same keys', () => {
+    expect(Object.keys(czechMessages).toSorted()).toEqual(Object.keys(englishMessages).toSorted());
   });
 });

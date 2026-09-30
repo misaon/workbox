@@ -8,5 +8,5 @@
   "cli_doctor_check_workbox_home": "Workbox home directory",
   "cli_doctor_summary": "{passed} of {total} checks passed",
   "cli_doctor_hint_install_claude": "Install Claude Code: https://code.claude.com/docs/en/setup",
-  "cli_doctor_hint_login": "Run `claude auth login` in a terminal, Workbox never handles your credentials."
+  "cli_doctor_hint_login": "Run `claude auth login` in a terminal. Workbox never handles your credentials."
 }
