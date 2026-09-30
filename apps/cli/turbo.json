@@ -4,7 +4,7 @@
   "tasks": {
     "build:binaries": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "cache": false
     }
   }
 }

@@ -1,7 +1,7 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
-import { BUILD_TARGETS, buildCommand, isBuildTarget } from '../src/build-targets.ts';
+import { BUILD_TARGETS, buildCommand, isBuildTarget, outfileFor } from '../src/build-targets.ts';
 import type { BuildTarget } from '../src/build-targets.ts';
 
 const EXIT_CODE_SUCCESS = 0;
@@ -38,15 +38,24 @@ function readVersion(packageJson: string): string {
   throw new Error(`${rootPackageJson} has no "version" string`);
 }
 
-const version = readVersion(await readFile(rootPackageJson, 'utf8'));
-for (const target of requestedTargets(process.argv.slice(FIRST_TARGET_ARGUMENT_INDEX))) {
+/**
+ * Compiles one target. `--sourcemap` embeds the map in the binary, yet Bun also writes `<outfile>.map`
+ * next to it; `dist/` must hold only the binaries because releases checksum, attest and upload `workbox-*`.
+ */
+async function compile(target: BuildTarget, version: string): Promise<void> {
   const proc = Bun.spawn(buildCommand(target, version, 'src/main.ts'), {
     cwd: cliRoot,
     stdout: 'inherit',
     stderr: 'inherit',
   });
-  // oxlint-disable-next-line no-await-in-loop -- targets compile one after the other on purpose: each run is CPU- and memory-heavy and parallel runs would interleave their logs
   if ((await proc.exited) !== EXIT_CODE_SUCCESS) {
     throw new Error(`bun build failed for ${target}`);
   }
+  await rm(`${join(cliRoot, outfileFor(target))}.map`, { force: true });
+}
+
+const version = readVersion(await readFile(rootPackageJson, 'utf8'));
+for (const target of requestedTargets(process.argv.slice(FIRST_TARGET_ARGUMENT_INDEX))) {
+  // oxlint-disable-next-line no-await-in-loop -- targets compile one after the other on purpose: each run is CPU- and memory-heavy and parallel runs would interleave their logs
+  await compile(target, version);
 }

@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
-    "build:binaries": "pnpm --filter @workbox/cli run build:binaries",
+    "build:binaries": "turbo run build:binaries",
     "dev": "turbo run dev",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
