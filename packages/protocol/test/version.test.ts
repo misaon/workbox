@@ -28,5 +28,6 @@ describe('protocolMajor', () => {
     '9007199254740993.0.0',
   ])('throws for the invalid version %j', (version) => {
     expect(() => protocolMajor(version)).toThrow(`Invalid protocol version "${version}"`);
+    expect(() => protocolMajor(version)).toThrow(TypeError);
   });
 });

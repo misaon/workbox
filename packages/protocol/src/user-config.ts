@@ -26,10 +26,10 @@ const harnessSchema = z.strictObject({
 export const userConfigSchema = z.strictObject({
   // Editors add a "$schema" key to JSON config files, so the strict root has to allow it.
   $schema: z.string().optional(),
-  harness: harnessSchema.default(() => harnessSchema.parse({})),
   locale: z.enum(LOCALES).default('en'),
   notifications: notificationsSchema.default(() => notificationsSchema.parse({})),
   office: officeSchema.default(() => officeSchema.parse({})),
+  harness: harnessSchema.default(() => harnessSchema.parse({})),
 });
 
 export type UserConfig = z.output<typeof userConfigSchema>;
@@ -67,9 +67,9 @@ export function parseUserConfig(input: unknown): ParseResult<UserConfig> {
     return { ok: true, value: result.data };
   }
   const message = result.error.issues.map(describeIssue).join('; ');
-  return { message, ok: false };
+  return { ok: false, message };
 }
 
 export function userConfigJsonSchema(): Record<string, unknown> {
-  return z.toJSONSchema(userConfigSchema, { io: 'input', target: 'draft-7' });
+  return z.toJSONSchema(userConfigSchema, { target: 'draft-7', io: 'input' });
 }

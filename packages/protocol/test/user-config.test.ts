@@ -5,10 +5,10 @@ import type { UserConfig } from '../src/index.ts';
 
 /** The documented defaults, written by hand so they do not depend on the code under test. */
 const EXPECTED_DEFAULTS: UserConfig = {
-  harness: { claude: { pinSystemBinary: false } },
   locale: 'en',
   notifications: { desktop: true, sound: true },
   office: { renderer: 'webgl' },
+  harness: { claude: { pinSystemBinary: false } },
 };
 
 /** Parses `input` and fails the test with the parser's own message when the input is rejected. */
@@ -50,6 +50,13 @@ function advertisedDefault(properties: Readonly<Record<string, unknown>>, name: 
 describe('DEFAULT_USER_CONFIG', () => {
   test('pins the documented defaults', () => {
     expect(DEFAULT_USER_CONFIG).toEqual(EXPECTED_DEFAULTS);
+    // The key order is part of the documented layout; the JSON Schema lists properties in it too.
+    expect(Object.keys(DEFAULT_USER_CONFIG)).toEqual([
+      'locale',
+      'notifications',
+      'office',
+      'harness',
+    ]);
   });
 
   test('is deeply frozen', () => {
@@ -68,10 +75,10 @@ describe('parseUserConfig', () => {
 
   test('accepts a full config', () => {
     const config = parseOrThrow({
-      harness: { claude: { pinSystemBinary: true } },
       locale: 'cs',
       notifications: { desktop: false, sound: true },
       office: { renderer: 'webgpu' },
+      harness: { claude: { pinSystemBinary: true } },
     });
     expect(config.locale).toBe('cs');
     expect(config.office.renderer).toBe('webgpu');
