@@ -188,6 +188,9 @@ catalogs:
     '@types/bun':
       specifier: ^1.4.2
       version: 1.4.2
+    citty:
+      specifier: ^0.2.2
+      version: 0.2.2
     lefthook:
       specifier: ^2.1.14
       version: 2.1.14
@@ -238,6 +241,25 @@ importers:
       turbo:
         specifier: 'catalog:'
         version: 2.11.5
+      typescript:
+        specifier: 'catalog:'
+        version: 7.0.2
+
+  apps/cli:
+    dependencies:
+      '@workbox/i18n':
+        specifier: workspace:*
+        version: link:../../packages/i18n
+      '@workbox/observability':
+        specifier: workspace:*
+        version: link:../../packages/observability
+      citty:
+        specifier: 'catalog:'
+        version: 0.2.2
+    devDependencies:
+      '@types/bun':
+        specifier: 'catalog:'
+        version: 1.4.2
       typescript:
         specifier: 'catalog:'
         version: 7.0.2
@@ -1147,6 +1169,9 @@ packages:
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
+
+  citty@0.2.2:
+    resolution: {integrity: sha512-+6vJA3L98yv+IdfKGZHBNiGW5KHn22e/JwID0Strsz8h4S/csAu/OuICwxrg44k5MRiZHWIo8XXuJgQTriRP4w==}
 
   cliui@9.0.1:
     resolution: {integrity: sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==}
@@ -2086,6 +2111,8 @@ snapshots:
       '@types/node': 26.6.3
 
   callsites@3.1.0: {}
+
+  citty@0.2.2: {}
 
   cliui@9.0.1:
     dependencies:

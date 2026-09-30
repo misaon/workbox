@@ -1,0 +1,10 @@
+{
+  "extends": ["//"],
+  "tags": ["app-cli"],
+  "tasks": {
+    "build:binaries": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    }
+  }
+}
