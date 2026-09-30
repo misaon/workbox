@@ -5,6 +5,7 @@ coverage/
 **/src/paraglide/
 **/project.inlang/cache/
 *.log
+*.bun-build
 .DS_Store
 .idea/
 .env
