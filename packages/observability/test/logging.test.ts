@@ -36,6 +36,7 @@ describe('configureLogging', () => {
       token: 't',
       safe: 'visible',
     });
+    expect(records).toHaveLength(1);
     const properties = records[0]?.properties;
     expect(properties?.['authorization']).toBe('[REDACTED]');
     expect(properties?.['apiKey']).toBe('[REDACTED]');

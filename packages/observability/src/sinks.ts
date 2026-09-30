@@ -6,6 +6,13 @@ import type { Sink } from '@logtape/logtape';
 const MAX_LOG_FILE_BYTES = 5_242_880;
 /** How many rotated copies are kept next to the active log file. */
 const MAX_LOG_FILES = 5;
+/**
+ * Zero turns LogTape's write buffer off, so every record is written (and synced) as it is logged.
+ * LogTape flushes a buffered file sink only when the sink is disposed, and the exit hook that
+ * `configure()` registers is async, so its disposal never runs before the process ends. A buffered
+ * log file stays empty after a short CLI run and loses its tail in a crash.
+ */
+const LOG_BUFFER_BYTES = 0;
 
 export interface StderrSinkOptions {
   readonly pretty: boolean;
@@ -24,6 +31,7 @@ export function createRotatingFileSink(path: string): Sink {
   return getRotatingFileSink(path, {
     maxSize: MAX_LOG_FILE_BYTES,
     maxFiles: MAX_LOG_FILES,
+    bufferSize: LOG_BUFFER_BYTES,
     formatter: jsonLinesFormatter,
   });
 }
