@@ -34,6 +34,10 @@ describe('workbox', () => {
     expect(parsed).toMatchObject({ version: '0.0.0-dev' });
     expect(parsed).toHaveProperty('checks.length', 4);
     expect(result.stderr).toContain('doctor');
+    // The debug file sink must exist and hold what the stderr sink printed.
+    expect(await Bun.file(join(home, 'logs', 'workbox.log')).text()).toContain(
+      'running doctor checks',
+    );
   });
 
   test('doctor with an unwritable home exits 1 and still prints JSON', async () => {
@@ -44,6 +48,12 @@ describe('workbox', () => {
     expect(result.exitCode).toBe(1);
     const parsed: unknown = JSON.parse(result.stdout);
     expect(parsed).toMatchObject({ ok: false });
+    expect(parsed).toHaveProperty(
+      'checks',
+      expect.arrayContaining([expect.objectContaining({ id: 'workbox-home', status: 'fail' })]),
+    );
+    // A file cannot hold a logs directory: the debug file sink is skipped with a warning.
+    expect(result.stderr).toContain('debug log file disabled');
   });
 
   test('doctor honours WORKBOX_LOCALE', async () => {

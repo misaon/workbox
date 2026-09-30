@@ -95,5 +95,7 @@ describe('checks', () => {
     const result = await checkWorkboxHome(file);
     expect(result.status).toBe('fail');
     expect(result.detail).toContain(file);
+    // The OS error code (EEXIST, ENOTDIR, ...) follows the path, not just the path alone.
+    expect(result.detail).toMatch(/: E[A-Z]+/u);
   });
 });
