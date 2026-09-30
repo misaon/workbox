@@ -14,7 +14,7 @@
     },
     "test": {
       "dependsOn": ["build", "^build"],
-      "outputs": ["coverage/**"],
+      "outputs": [],
       "env": ["WORKBOX_HOME", "WORKBOX_DEBUG", "WORKBOX_LOCALE", "WORKBOX_BINARY_TEST"]
     },
     "dev": {
