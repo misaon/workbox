@@ -41,7 +41,40 @@
         "jest/no-focused-tests": "error",
         "max-lines-per-function": "off",
         "max-statements": "off",
-        "no-magic-numbers": "off"
+        "no-magic-numbers": "off",
+        "no-restricted-properties": [
+          "error",
+          {
+            "object": "describe",
+            "property": "only",
+            "message": "A committed .only hides the rest of the suite (jest/no-focused-tests cannot see bun:test imports, so this rule guards them)."
+          },
+          {
+            "object": "describe",
+            "property": "skip",
+            "message": "A committed .skip silently stops testing (jest/no-disabled-tests cannot see bun:test imports, so this rule guards them)."
+          },
+          {
+            "object": "it",
+            "property": "only",
+            "message": "A committed .only hides the rest of the suite (jest/no-focused-tests cannot see bun:test imports, so this rule guards them)."
+          },
+          {
+            "object": "it",
+            "property": "skip",
+            "message": "A committed .skip silently stops testing (jest/no-disabled-tests cannot see bun:test imports, so this rule guards them)."
+          },
+          {
+            "object": "test",
+            "property": "only",
+            "message": "A committed .only hides the rest of the suite (jest/no-focused-tests cannot see bun:test imports, so this rule guards them)."
+          },
+          {
+            "object": "test",
+            "property": "skip",
+            "message": "A committed .skip silently stops testing (jest/no-disabled-tests cannot see bun:test imports, so this rule guards them)."
+          }
+        ]
       }
     },
     {
