@@ -1,0 +1,23 @@
+{
+  "name": "@workbox/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Czech and English messages for Workbox, compiled with Paraglide JS.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "bun run scripts/compile.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@workbox/protocol": "workspace:*"
+  },
+  "devDependencies": {
+    "@inlang/paraglide-js": "catalog:",
+    "@types/bun": "catalog:",
+    "typescript": "catalog:"
+  }
+}

@@ -3,6 +3,7 @@ dist/
 coverage/
 .turbo/
 **/src/paraglide/
+**/project.inlang/cache/
 *.log
 .DS_Store
 .idea/

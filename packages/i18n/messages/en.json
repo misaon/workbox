@@ -1,0 +1,12 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "app_title": "Workbox",
+  "cli_doctor_title": "Workbox doctor",
+  "cli_doctor_check_git": "git",
+  "cli_doctor_check_claude_binary": "Claude Code binary",
+  "cli_doctor_check_claude_login": "Claude Code login",
+  "cli_doctor_check_workbox_home": "Workbox home directory",
+  "cli_doctor_summary": "{passed} of {total} checks passed",
+  "cli_doctor_hint_install_claude": "Install Claude Code: https://code.claude.com/docs/en/setup",
+  "cli_doctor_hint_login": "Run `claude auth login` in a terminal, Workbox never handles your credentials."
+}

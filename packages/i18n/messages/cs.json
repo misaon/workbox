@@ -1,0 +1,12 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+  "app_title": "Workbox",
+  "cli_doctor_title": "Workbox doktor",
+  "cli_doctor_check_git": "git",
+  "cli_doctor_check_claude_binary": "binárka Claude Code",
+  "cli_doctor_check_claude_login": "přihlášení Claude Code",
+  "cli_doctor_check_workbox_home": "domovský adresář Workboxu",
+  "cli_doctor_summary": "Prošlo {passed} z {total} kontrol",
+  "cli_doctor_hint_install_claude": "Nainstalujte Claude Code: https://code.claude.com/docs/en/setup",
+  "cli_doctor_hint_login": "Spusťte v terminálu `claude auth login`, Workbox s vašimi přihlašovacími údaji nikdy nepracuje."
+}
