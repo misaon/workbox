@@ -20,7 +20,7 @@ pnpm's supply-chain settings are on:
 - `blockExoticSubdeps: true`: only direct dependencies may come from git or tarball URLs.
 - `strictDepBuilds: true` with an explicit `allowBuilds` list (`lefthook` and `playwright`): an install fails on any dependency build script that nobody has reviewed.
 
-Internal packages have no transpile or bundle step: `exports` point at `src/index.ts`, Bun and Vite consume TypeScript directly, and `tsc --noEmit` type-checks. The one generated input is the Paraglide output of `@workbox/i18n`, produced by the Turborepo `build` task that `typecheck` and `test` depend on.
+Internal packages have no transpile or bundle step: `exports` point at `src/index.ts`, Bun and Vite consume TypeScript directly, and `tsc --noEmit` type-checks. The one generated input is the Paraglide output of `@workbox/i18n`, produced by the Turborepo `build` task that `typecheck` and `test` depend on. The inlang message-format plugin that this build runs is a `catalog:dev` dependency of `@workbox/i18n`, and `project.inlang/settings.json` loads it from `node_modules` by relative path instead of from a CDN URL, so the build executes only lockfile-pinned code and needs no network.
 
 ## Consequences
 

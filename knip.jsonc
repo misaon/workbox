@@ -14,6 +14,8 @@
     "packages/i18n": {
       "entry": ["test/**/*.test.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"],
+      // The inlang SDK loads it by file path from project.inlang/settings.json; no import names it.
+      "ignoreDependencies": ["@inlang/plugin-message-format"],
     },
     "apps/cli": {
       "entry": ["test/**/*.test.ts"],

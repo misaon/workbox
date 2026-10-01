@@ -9,9 +9,10 @@ await compile({
   emitTsDeclarations: true,
 });
 
-// Paraglide only logs a warning when the inlang plugin cannot be loaded (for example when the CDN
-// is unreachable) and still exits 0 after writing an empty message module. Fail the build instead,
-// so that neither a developer nor turbo's cache keeps an incomplete module.
+// Paraglide only logs a warning when the inlang plugin cannot be loaded (for example when the
+// message-format plugin that project.inlang/settings.json points at is missing from node_modules)
+// and still exits 0 after writing an empty message module. Fail the build instead, so that neither
+// a developer nor turbo's cache keeps an incomplete module.
 const generated: Record<string, unknown> = await import('../src/paraglide/messages.js');
 const missing = Object.keys(baseMessages).filter(
   (key) => key !== '$schema' && typeof generated[key] !== 'function',
