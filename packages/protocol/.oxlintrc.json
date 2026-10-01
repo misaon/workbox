@@ -4,7 +4,8 @@
   "rules": {
     "no-restricted-globals": [
       "error",
-      { "name": "Bun", "message": "protocol must stay runtime-neutral" }
+      { "name": "Bun", "message": "protocol must stay runtime-neutral" },
+      { "name": "process", "message": "protocol must stay runtime-neutral" }
     ],
     "no-restricted-imports": [
       "error",
