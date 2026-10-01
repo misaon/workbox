@@ -23,7 +23,7 @@ export async function runDoctor(deps: DoctorDependencies): Promise<DoctorReport>
   const claudeLogin: CheckResult =
     claudeBinary.status === 'ok'
       ? await checkClaudeLogin(deps.runner)
-      : { id: 'claude-login', status: 'warn', detail: 'skipped: Claude Code binary not found' };
+      : { id: 'claude-login', status: 'warn', detail: { code: 'skipped-no-binary' } };
   const home = await checkWorkboxHome(resolveWorkboxHome(deps.env));
   const checks = [git, claudeBinary, claudeLogin, home];
   return { version: deps.version, checks, ok: checks.every((check) => check.status !== 'fail') };

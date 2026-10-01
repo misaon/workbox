@@ -5,10 +5,28 @@ import type { CommandRunner } from '../process/command-runner.ts';
 export type CheckStatus = 'ok' | 'warn' | 'fail';
 export type CheckId = 'git' | 'claude-binary' | 'claude-login' | 'workbox-home';
 
+/**
+ * What a check found, as data: `--json` prints it as is and `report.ts` turns it into text in the
+ * user's locale. `version`, `path` and `os-error` carry what they report (`os-error` as
+ * `<path>: <reason>`), `logged-in` carries the configuration directory when `claude auth status`
+ * names one, and the other codes stand for a fixed message.
+ */
+export type CheckDetail =
+  | { readonly code: 'version'; readonly value: string }
+  | { readonly code: 'path'; readonly value: string }
+  | { readonly code: 'os-error'; readonly value: string }
+  | { readonly code: 'logged-in'; readonly value?: string }
+  | { readonly code: 'not-found' }
+  | { readonly code: 'not-logged-in' }
+  | { readonly code: 'skipped-no-binary' };
+
+/** Every code a check can report, from `version` to `skipped-no-binary`. */
+export type DetailCode = CheckDetail['code'];
+
 export interface CheckResult {
   readonly id: CheckId;
   readonly status: CheckStatus;
-  readonly detail: string;
+  readonly detail: CheckDetail;
 }
 
 const EXIT_CODE_SUCCESS = 0;
@@ -47,9 +65,9 @@ export async function checkGit(runner: CommandRunner): Promise<CheckResult> {
   const version =
     result.exitCode === EXIT_CODE_SUCCESS ? parseGitVersion(result.stdout) : NOT_FOUND;
   if (version === null) {
-    return { id: 'git', status: 'fail', detail: result.stderr.trim() || 'git not found' };
+    return { id: 'git', status: 'fail', detail: { code: 'not-found' } };
   }
-  return { id: 'git', status: 'ok', detail: version };
+  return { id: 'git', status: 'ok', detail: { code: 'version', value: version } };
 }
 
 export async function checkClaudeBinary(runner: CommandRunner): Promise<CheckResult> {
@@ -57,30 +75,38 @@ export async function checkClaudeBinary(runner: CommandRunner): Promise<CheckRes
   const version =
     result.exitCode === EXIT_CODE_SUCCESS ? parseClaudeVersion(result.stdout) : NOT_FOUND;
   if (version === null) {
-    return { id: 'claude-binary', status: 'warn', detail: result.stderr.trim() || 'not found' };
+    return { id: 'claude-binary', status: 'warn', detail: { code: 'not-found' } };
   }
-  return { id: 'claude-binary', status: 'ok', detail: version };
+  return { id: 'claude-binary', status: 'ok', detail: { code: 'version', value: version } };
 }
 
 export async function checkClaudeLogin(runner: CommandRunner): Promise<CheckResult> {
   const result = await runner.run(['claude', 'auth', 'status']);
   if (result.exitCode === EXIT_CODE_SUCCESS) {
+    const configDirectory = readConfigDirectory(result.stdout);
     return {
       id: 'claude-login',
       status: 'ok',
-      detail: readConfigDirectory(result.stdout) ?? 'logged in',
+      detail:
+        configDirectory === null
+          ? { code: 'logged-in' }
+          : { code: 'logged-in', value: configDirectory },
     };
   }
-  return { id: 'claude-login', status: 'warn', detail: 'not logged in' };
+  return { id: 'claude-login', status: 'warn', detail: { code: 'not-logged-in' } };
 }
 
 export async function checkWorkboxHome(home: string): Promise<CheckResult> {
   try {
     await mkdir(home, { recursive: true });
     await access(home, constants.W_OK);
-    return { id: 'workbox-home', status: 'ok', detail: home };
+    return { id: 'workbox-home', status: 'ok', detail: { code: 'path', value: home } };
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error);
-    return { id: 'workbox-home', status: 'fail', detail: `${home}: ${reason}` };
+    return {
+      id: 'workbox-home',
+      status: 'fail',
+      detail: { code: 'os-error', value: `${home}: ${reason}` },
+    };
   }
 }

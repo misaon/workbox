@@ -31,8 +31,20 @@ describe('workbox', () => {
     const home = await mkdtemp(join(tmpdir(), 'workbox-cli-'));
     const result = await runCli(['doctor', '--json', '--debug'], { WORKBOX_HOME: home });
     const parsed: unknown = JSON.parse(result.stdout);
-    expect(parsed).toMatchObject({ version: '0.0.0-dev' });
-    expect(parsed).toHaveProperty('checks.length', 4);
+    // Each detail is data, a code plus a value for some codes, never text in one locale. git and
+    // Claude Code depend on the host, so only the home check pins exact values.
+    expect(parsed).toMatchObject({
+      version: '0.0.0-dev',
+      checks: [
+        { id: 'git' },
+        { id: 'claude-binary' },
+        { id: 'claude-login' },
+        { id: 'workbox-home', status: 'ok', detail: { code: 'path', value: home } },
+      ],
+    });
+    for (const index of [0, 1, 2]) {
+      expect(parsed).toHaveProperty(['checks', index, 'detail', 'code'], expect.any(String));
+    }
     expect(result.stderr).toContain('doctor');
     // The debug file sink must exist and hold what the stderr sink printed.
     expect(await Bun.file(join(home, 'logs', 'workbox.log')).text()).toContain(
@@ -47,11 +59,17 @@ describe('workbox', () => {
     const result = await runCli(['doctor', '--json', '--debug'], { WORKBOX_HOME: file });
     expect(result.exitCode).toBe(1);
     const parsed: unknown = JSON.parse(result.stdout);
-    expect(parsed).toMatchObject({ ok: false });
-    expect(parsed).toHaveProperty(
-      'checks',
-      expect.arrayContaining([expect.objectContaining({ id: 'workbox-home', status: 'fail' })]),
-    );
+    expect(parsed).toMatchObject({
+      ok: false,
+      checks: [
+        { id: 'git' },
+        { id: 'claude-binary' },
+        { id: 'claude-login' },
+        { id: 'workbox-home', status: 'fail', detail: { code: 'os-error' } },
+      ],
+    });
+    // The value is "<path>: <OS error>".
+    expect(parsed).toHaveProperty(['checks', 3, 'detail', 'value'], expect.stringContaining(file));
     // A file cannot hold a logs directory: the debug file sink is skipped with a warning.
     expect(result.stderr).toContain('debug log file disabled');
   });
@@ -60,5 +78,8 @@ describe('workbox', () => {
     const home = await mkdtemp(join(tmpdir(), 'workbox-cli-'));
     const result = await runCli(['doctor'], { WORKBOX_HOME: home, WORKBOX_LOCALE: 'cs' });
     expect(result.stdout).toContain('Workbox doktor');
+    expect(result.stdout).toContain(`domovský adresář Workboxu: ${home}`);
+    // Whatever git and Claude Code look like on this host, no English detail text may leak through.
+    expect(result.stdout).not.toMatch(/not found|logged in|skipped/u);
   });
 });

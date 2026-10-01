@@ -34,6 +34,12 @@ describe('runDoctor', () => {
     expect(report.version).toBe('1.2.3');
     expect(report.ok).toBe(true);
     expect(report.checks.map((check) => check.status)).toEqual(['ok', 'ok', 'ok', 'ok']);
+    expect(report.checks.map((check) => check.detail)).toEqual([
+      { code: 'version', value: '2.51.0' },
+      { code: 'version', value: '2.1.285' },
+      { code: 'logged-in', value: '/home/u/.claude' },
+      { code: 'path', value: home },
+    ]);
   });
 
   test('missing claude skips the login check but does not fail the report', async () => {
@@ -52,6 +58,12 @@ describe('runDoctor', () => {
       'claude-login:warn',
       'workbox-home:ok',
     ]);
+    expect(report.checks.map((check) => check.detail.code)).toEqual([
+      'version',
+      'not-found',
+      'skipped-no-binary',
+      'path',
+    ]);
   });
 
   test('missing git fails the report', async () => {
@@ -62,5 +74,6 @@ describe('runDoctor', () => {
       version: '1.2.3',
     });
     expect(report.ok).toBe(false);
+    expect(report.checks[0]).toEqual({ id: 'git', status: 'fail', detail: { code: 'not-found' } });
   });
 });

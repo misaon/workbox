@@ -48,34 +48,73 @@ describe('checks', () => {
     const runner = runnerReturning({
       'git --version': { exitCode: 0, stdout: 'git version 2.51.0', stderr: '' },
     });
-    expect(await checkGit(runner)).toEqual({ id: 'git', status: 'ok', detail: '2.51.0' });
+    expect(await checkGit(runner)).toEqual({
+      id: 'git',
+      status: 'ok',
+      detail: { code: 'version', value: '2.51.0' },
+    });
   });
 
   test('git missing is a failure', async () => {
-    const result = await checkGit(runnerReturning({}));
-    expect(result.status).toBe('fail');
-    expect(result.detail).toContain('git');
+    expect(await checkGit(runnerReturning({}))).toEqual({
+      id: 'git',
+      status: 'fail',
+      detail: { code: 'not-found' },
+    });
+  });
+
+  test('claude binary present reports its version', async () => {
+    const runner = runnerReturning({
+      'claude --version': { exitCode: 0, stdout: '2.1.285 (Claude Code)\n', stderr: '' },
+    });
+    expect(await checkClaudeBinary(runner)).toEqual({
+      id: 'claude-binary',
+      status: 'ok',
+      detail: { code: 'version', value: '2.1.285' },
+    });
   });
 
   test('claude binary missing is a warning', async () => {
-    const result = await checkClaudeBinary(runnerReturning({}));
-    expect(result).toMatchObject({ id: 'claude-binary', status: 'warn' });
+    expect(await checkClaudeBinary(runnerReturning({}))).toEqual({
+      id: 'claude-binary',
+      status: 'warn',
+      detail: { code: 'not-found' },
+    });
   });
 
   test('claude login uses the exit code as the source of truth', async () => {
     const loggedIn = runnerReturning({
       'claude auth status': { exitCode: 0, stdout: 'Logged in', stderr: '' },
     });
+    // Text output names no directory, so the detail carries no value.
     expect(await checkClaudeLogin(loggedIn)).toEqual({
       id: 'claude-login',
       status: 'ok',
-      detail: 'logged in',
+      detail: { code: 'logged-in' },
     });
     const loggedOut = runnerReturning({
       'claude auth status': { exitCode: 1, stdout: '', stderr: '' },
     });
-    const loggedOutResult = await checkClaudeLogin(loggedOut);
-    expect(loggedOutResult.status).toBe('warn');
+    expect(await checkClaudeLogin(loggedOut)).toEqual({
+      id: 'claude-login',
+      status: 'warn',
+      detail: { code: 'not-logged-in' },
+    });
+  });
+
+  test('claude login carries the configuration directory that the JSON status names', async () => {
+    const runner = runnerReturning({
+      'claude auth status': {
+        exitCode: 0,
+        stdout: '{"configDirectory":"/Users/x/.claude"}',
+        stderr: '',
+      },
+    });
+    expect(await checkClaudeLogin(runner)).toEqual({
+      id: 'claude-login',
+      status: 'ok',
+      detail: { code: 'logged-in', value: '/Users/x/.claude' },
+    });
   });
 
   test('workbox home is created when missing', async () => {
@@ -84,7 +123,7 @@ describe('checks', () => {
     expect(await checkWorkboxHome(home)).toEqual({
       id: 'workbox-home',
       status: 'ok',
-      detail: home,
+      detail: { code: 'path', value: home },
     });
   });
 
@@ -93,9 +132,13 @@ describe('checks', () => {
     const file = join(base, 'not-a-directory');
     await writeFile(file, 'x');
     const result = await checkWorkboxHome(file);
-    expect(result.status).toBe('fail');
-    expect(result.detail).toContain(file);
+    expect(result).toMatchObject({
+      id: 'workbox-home',
+      status: 'fail',
+      detail: { code: 'os-error' },
+    });
+    expect(result.detail).toHaveProperty('value', expect.stringContaining(`${file}: `));
     // The OS error code (EEXIST, ENOTDIR, ...) follows the path, not just the path alone.
-    expect(result.detail).toMatch(/: E[A-Z]+/u);
+    expect(result.detail).toHaveProperty('value', expect.stringMatching(/: E[A-Z]+/u));
   });
 });

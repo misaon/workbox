@@ -1,7 +1,7 @@
 import { m } from '@workbox/i18n';
 import type { Locale } from '@workbox/i18n';
 
-import type { CheckId, CheckResult, CheckStatus } from './checks.ts';
+import type { CheckDetail, CheckId, CheckResult, CheckStatus } from './checks.ts';
 import type { DoctorReport } from './run-doctor.ts';
 
 const SYMBOLS: Record<CheckStatus, string> = { ok: '✓', warn: '!', fail: '✗' };
@@ -16,6 +16,27 @@ const LABELS: Record<CheckId, (locale: Locale) => string> = {
 
 function label(id: CheckId, locale: Locale): string {
   return LABELS[id](locale);
+}
+
+/**
+ * A code without a value prints its message; `logged-in` prints the configuration directory when
+ * there is one. What is left prints the value the check read: a version, a path or an OS error, so
+ * a new code without a value does not compile until it gets a branch here.
+ */
+function detailText(detail: CheckDetail, locale: Locale): string {
+  if (detail.code === 'not-found') {
+    return m.cli_doctor_detail_not_found({}, { locale });
+  }
+  if (detail.code === 'not-logged-in') {
+    return m.cli_doctor_detail_not_logged_in({}, { locale });
+  }
+  if (detail.code === 'skipped-no-binary') {
+    return m.cli_doctor_detail_skipped_no_binary({}, { locale });
+  }
+  if (detail.code === 'logged-in') {
+    return detail.value ?? m.cli_doctor_detail_logged_in({}, { locale });
+  }
+  return detail.value;
 }
 
 function hints(checks: readonly CheckResult[], locale: Locale): string[] {
@@ -33,7 +54,8 @@ export function formatDoctorReport(report: DoctorReport, locale: Locale): string
   const lines = [
     `${m.cli_doctor_title({}, { locale })} ${report.version}`,
     ...report.checks.map(
-      (check) => `${SYMBOLS[check.status]} ${label(check.id, locale)}: ${check.detail}`,
+      (check) =>
+        `${SYMBOLS[check.status]} ${label(check.id, locale)}: ${detailText(check.detail, locale)}`,
     ),
     m.cli_doctor_summary(
       { passed: String(passed), total: String(report.checks.length) },
