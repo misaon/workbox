@@ -2,50 +2,55 @@ packages:
   - 'apps/*'
   - 'packages/*'
 
+# Runtime dependencies only. Dev tooling lives in the named catalog `dev` below, so Renovate can
+# give it its own automerge policy (renovate.json matches the dependency type pnpm.catalog.dev).
 catalog:
-  # ^8.0.6, not ^7.29.0, on purpose: every @babel/core 7.x from 7.22.9 on depends on semver ^6.3.1,
-  # and semver 6.3.1 (a 2023-07-10 backport) was published without provenance after semver 7.5.1
-  # had it, so trustPolicy no-downgrade rejects it as a possible package takeover. Babel 8 needs no
-  # semver 6 (8.0.5 and later use verkit instead of semver) and its stable releases carry provenance.
-  '@babel/core': ^8.0.6
-  '@commitlint/cli': ^21.2.3
-  '@commitlint/config-conventional': ^21.2.3
-  '@commitlint/types': ^21.2.3
-  '@cspell/dict-cs-cz': ^3.0.8
-  '@inlang/paraglide-js': ^2.25.4
   '@logtape/file': ^2.3.10
   '@logtape/logtape': ^2.3.10
   '@logtape/redaction': ^2.3.10
-  '@ls-lint/ls-lint': ^2.3.1
-  '@rolldown/plugin-babel': ^0.2.4
-  '@tailwindcss/vite': ^4.3.3
-  '@types/bun': ^1.4.2
-  '@types/react': ^19.3.0
-  '@types/react-dom': ^19.3.0
-  '@vitejs/plugin-react': ^6.1.1
-  '@vitest/browser-playwright': ^5.0.3
-  babel-plugin-react-compiler: ^1.0.0
   citty: ^0.2.2
-  cspell: ^10.3.6
-  knip: ^6.39.0
-  # ^2.1.14, not ^2.1.15, on purpose: lefthook 2.1.0 to 2.1.14 were published by GitHub Actions with
-  # trusted-publisher provenance, but 2.1.15 (2026-09-29) came from a personal npm account without
-  # any attestation, so trustPolicy no-downgrade rejects it as a possible package takeover and pnpm
-  # resolves 2.1.14 instead. A later release that carries provenance again is picked up as usual.
-  lefthook: ^2.1.14
-  markdownlint-cli2: ^0.23.3
-  oxfmt: ^0.71.0
-  oxlint: ^1.86.0
-  oxlint-tsgolint: ^7.0.2003
-  playwright: ^1.63.0
   react: ^19.3.0
   react-dom: ^19.3.0
-  tailwindcss: ^4.3.3
-  turbo: ^2.11.5
-  typescript: ^7.0.2
-  vite: ^8.3.1
-  vitest: ^5.0.3
   zod: ^4.6.5
+
+catalogs:
+  dev:
+    # ^8.0.6, not ^7.29.0, on purpose: every @babel/core 7.x from 7.22.9 on depends on semver ^6.3.1,
+    # and semver 6.3.1 (a 2023-07-10 backport) was published without provenance after semver 7.5.1
+    # had it, so trustPolicy no-downgrade rejects it as a possible package takeover. Babel 8 needs no
+    # semver 6 (8.0.5 and later use verkit instead of semver) and its stable releases carry provenance.
+    '@babel/core': ^8.0.6
+    '@commitlint/cli': ^21.2.3
+    '@commitlint/config-conventional': ^21.2.3
+    '@commitlint/types': ^21.2.3
+    '@cspell/dict-cs-cz': ^3.0.8
+    '@inlang/paraglide-js': ^2.25.4
+    '@ls-lint/ls-lint': ^2.3.1
+    '@rolldown/plugin-babel': ^0.2.4
+    '@tailwindcss/vite': ^4.3.3
+    '@types/bun': ^1.4.2
+    '@types/react': ^19.3.0
+    '@types/react-dom': ^19.3.0
+    '@vitejs/plugin-react': ^6.1.1
+    '@vitest/browser-playwright': ^5.0.3
+    babel-plugin-react-compiler: ^1.0.0
+    cspell: ^10.3.6
+    knip: ^6.39.0
+    # ^2.1.14, not ^2.1.15, on purpose: lefthook 2.1.0 to 2.1.14 were published by GitHub Actions with
+    # trusted-publisher provenance, but 2.1.15 (2026-09-29) came from a personal npm account without
+    # any attestation, so trustPolicy no-downgrade rejects it as a possible package takeover and pnpm
+    # resolves 2.1.14 instead. A later release that carries provenance again is picked up as usual.
+    lefthook: ^2.1.14
+    markdownlint-cli2: ^0.23.3
+    oxfmt: ^0.71.0
+    oxlint: ^1.86.0
+    oxlint-tsgolint: ^7.0.2003
+    playwright: ^1.63.0
+    tailwindcss: ^4.3.3
+    turbo: ^2.11.5
+    typescript: ^7.0.2
+    vite: ^8.3.1
+    vitest: ^5.0.3
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:

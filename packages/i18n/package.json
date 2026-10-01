@@ -16,8 +16,8 @@
     "@workbox/protocol": "workspace:*"
   },
   "devDependencies": {
-    "@inlang/paraglide-js": "catalog:",
-    "@types/bun": "catalog:",
-    "typescript": "catalog:"
+    "@inlang/paraglide-js": "catalog:dev",
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
   }
 }

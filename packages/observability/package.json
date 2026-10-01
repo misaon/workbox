@@ -17,7 +17,7 @@
     "@logtape/redaction": "catalog:"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "typescript": "catalog:"
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
   }
 }

@@ -16,18 +16,18 @@
     "react-dom": "catalog:"
   },
   "devDependencies": {
-    "@babel/core": "catalog:",
-    "@rolldown/plugin-babel": "catalog:",
-    "@tailwindcss/vite": "catalog:",
-    "@types/react": "catalog:",
-    "@types/react-dom": "catalog:",
-    "@vitejs/plugin-react": "catalog:",
-    "@vitest/browser-playwright": "catalog:",
-    "babel-plugin-react-compiler": "catalog:",
-    "playwright": "catalog:",
-    "tailwindcss": "catalog:",
-    "typescript": "catalog:",
-    "vite": "catalog:",
-    "vitest": "catalog:"
+    "@babel/core": "catalog:dev",
+    "@rolldown/plugin-babel": "catalog:dev",
+    "@tailwindcss/vite": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "@types/react-dom": "catalog:dev",
+    "@vitejs/plugin-react": "catalog:dev",
+    "@vitest/browser-playwright": "catalog:dev",
+    "babel-plugin-react-compiler": "catalog:dev",
+    "playwright": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "typescript": "catalog:dev",
+    "vite": "catalog:dev",
+    "vitest": "catalog:dev"
   }
 }
