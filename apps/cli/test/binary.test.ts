@@ -19,8 +19,13 @@ describe.skipIf(process.env['WORKBOX_BINARY_TEST'] !== '1')('compiled binary', (
       stdout: 'pipe',
       stderr: 'pipe',
     });
-    const [stdout, exitCode] = await Promise.all([run.stdout.text(), run.exited]);
-    expect(exitCode).toBe(0);
+    const [stdout, stderr, exitCode] = await Promise.all([
+      run.stdout.text(),
+      run.stderr.text(),
+      run.exited,
+    ]);
+    // One object, so a failing binary shows its own stderr next to its exit code in the diff.
+    expect({ exitCode, stderr }).toEqual({ exitCode: 0, stderr: '' });
     expect(stdout.trim()).toBe('9.9.9-test');
   }, 120_000);
 });
