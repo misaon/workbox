@@ -19,10 +19,11 @@ function label(id: CheckId, locale: Locale): string {
 }
 
 /**
- * A code without a value prints its message; `not-found` follows it with what the tool printed
- * when it ran and failed, and `logged-in` prints the configuration directory when there is one.
- * What is left prints the value the check read: a version, a path or an OS error, so a new code
- * without a value does not compile until it gets a branch here.
+ * A code without a value prints its message; `not-found` follows it with what the runner reported
+ * on stderr (the tool's own text, or the runner's timeout note) when there is any, and `logged-in`
+ * prints the configuration directory when there is one. What is left prints the value the check
+ * read: a version, a path or an OS error, so a new code without a value does not compile until it
+ * gets a branch here.
  */
 function detailText(detail: CheckDetail, locale: Locale): string {
   if (detail.code === 'not-found') {
