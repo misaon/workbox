@@ -1,4 +1,7 @@
 import { afterEach, describe, expect, mock, spyOn, test } from 'bun:test';
+import { mkdtemp, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 import { bunCommandRunner, createBunCommandRunner } from '../src/process/command-runner.ts';
 
@@ -83,6 +86,53 @@ describe('createBunCommandRunner', () => {
   });
 });
 
+describe('createBunCommandRunner escalation and drain', () => {
+  test('a command that ignores SIGTERM is killed after the grace period', async () => {
+    const runner = createBunCommandRunner({ timeoutMs: 200, killGraceMs: 300 });
+    const started = performance.now();
+    const result = await runner.run([
+      'bun',
+      '-e',
+      'process.on("SIGTERM", () => {}); setInterval(() => {}, 1000)',
+    ]);
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toBe('timed out after 200 ms');
+    expect(performance.now() - started).toBeLessThan(3000);
+  });
+
+  test('a grandchild holding the pipes does not keep the result past the drain grace', async () => {
+    const runner = createBunCommandRunner({ timeoutMs: 5000, drainGraceMs: 300 });
+    const started = performance.now();
+    const result = await runner.run([
+      'bun',
+      '-e',
+      'Bun.spawn(["bun", "-e", "await Bun.sleep(4000)"], { stdout: "inherit", stderr: "inherit" }); process.stderr.write("real error"); process.exit(3)',
+    ]);
+    expect(result.exitCode).toBe(3);
+    expect(result.stderr).toBe('real error');
+    expect(performance.now() - started).toBeLessThan(2500);
+  });
+
+  test.skipIf(process.platform === 'win32')(
+    'a file that exists but is not executable surfaces the spawn error',
+    async () => {
+      // Windows has no execute bit; its spawn errors for a text file differ and are not part of
+      // this contract.
+      const dir = await mkdtemp(join(tmpdir(), 'workbox-runner-'));
+      const file = join(dir, 'not-executable');
+      await writeFile(file, 'plain text');
+      const result = await bunCommandRunner.run([file]);
+      expect(result.exitCode).toBe(127);
+      expect(result.stderr).toContain('EACCES');
+    },
+  );
+
+  test('a missing executable still has an empty stderr', async () => {
+    const result = await bunCommandRunner.run(['workbox-no-such-binary-xyz']);
+    expect(result).toEqual({ exitCode: 127, stdout: '', stderr: '' });
+  });
+});
+
 const realSpawn = Bun.spawn;
 
 /** Bun reports `null` for the exit code and the signal of a command that has not ended that way. */
@@ -91,15 +141,27 @@ const UNSET = null;
 
 /**
  * A command that a test scripts instead of spawning: the runner reads only its two streams, its exit
- * status, `exitCode` and `kill`, so that is all the fake has. `exitCode` is set for a command that
- * has already exited and left out for one that is still running.
+ * status, `exitCode`, `signalCode` and `kill`, so that is all the fake has. `exitCode` is set for a
+ * command that has already exited, `signalCode` for one that a signal has already ended, and both
+ * are left out for one that is still running.
  */
 interface FakeCommand {
   readonly exitCode?: number;
+  readonly signalCode?: string;
   readonly exited: () => Promise<number>;
   readonly stdout: () => Promise<string>;
   readonly stderr: () => Promise<string>;
   readonly kill?: () => void;
+}
+
+/** A pipe that delivers what `text` settles with as one chunk and then closes, or fails as it does. */
+function pipeOf(text: () => Promise<string>): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    async pull(controller: Readonly<ReadableStreamDefaultController<Uint8Array>>) {
+      controller.enqueue(new TextEncoder().encode(await text()));
+      controller.close();
+    },
+  });
 }
 
 /** Settles with `value` once `delayMs` have passed since it was called. */
@@ -114,9 +176,9 @@ function fakeSubprocess(command: FakeCommand) {
   const kill = mock(command.kill);
   const proc = {
     exitCode: command.exitCode ?? UNSET,
-    signalCode: UNSET,
-    stdout: { text: command.stdout },
-    stderr: { text: command.stderr },
+    signalCode: command.signalCode ?? UNSET,
+    stdout: pipeOf(command.stdout),
+    stderr: pipeOf(command.stderr),
     get exited() {
       return command.exited();
     },
@@ -182,6 +244,36 @@ describe('createBunCommandRunner with a scripted command', () => {
     const result = await createBunCommandRunner({ timeoutMs: 50 }).run(['git', '--version']);
     expect(result).toEqual({ exitCode: 143, stdout: '', stderr: 'timed out after 50 ms' });
     expect(kill).toHaveBeenCalledTimes(1);
+  });
+
+  test('a kill that fails while stopping an unreadable command does not reject', async () => {
+    // The command is still running when its stderr cannot be read, so the runner has to stop it.
+    const { proc, kill } = fakeSubprocess({
+      exited: settlesAfter(300, 143),
+      stdout: () => Promise.resolve(''),
+      stderr: () => Promise.reject(new Error('EIO: i/o error, read')),
+      kill: () => {
+        throw new Error('EPERM: operation not permitted');
+      },
+    });
+    spyOn(Bun, 'spawn').mockReturnValue(proc);
+    const result = await createBunCommandRunner().run(['git', '--version']);
+    expect(result).toEqual({ exitCode: 127, stdout: '', stderr: '' });
+    expect(kill).toHaveBeenCalledTimes(1);
+  });
+
+  test('a command that a signal has already ended is not reported as timed out', async () => {
+    // A grandchild still holds the stderr pipe open, so the text arrives long after the signal.
+    const { proc, kill } = fakeSubprocess({
+      signalCode: 'SIGKILL',
+      exited: () => Promise.resolve(137),
+      stdout: () => Promise.resolve(''),
+      stderr: settlesAfter(300, 'partial'),
+    });
+    spyOn(Bun, 'spawn').mockReturnValue(proc);
+    const result = await createBunCommandRunner({ timeoutMs: 50 }).run(['git', '--version']);
+    expect(result).toEqual({ exitCode: 137, stdout: '', stderr: 'partial' });
+    expect(kill).not.toHaveBeenCalled();
   });
 
   // `bun test` runs every file in one process, so a spy left behind would break later files.
