@@ -135,7 +135,7 @@ describe('parseUserConfig', () => {
   });
 
   test('rejects unknown keys and names the key', () => {
-    expect(rejectionOf({ colour: 'blue' })).toContain('colour');
+    expect(rejectionOf({ unknownKey: 'blue' })).toContain('unknownKey');
   });
 
   test('reports a nested error under its dotted path', () => {

@@ -35,6 +35,5 @@ riscv
 webgpu
 verkit
 visualised
-colour
 binárka
 workboxu
