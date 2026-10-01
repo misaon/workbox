@@ -19,10 +19,11 @@
       "automergeType": "pr"
     },
     {
-      "description": "GitHub Actions: automerge digest, minor and patch bumps of SHA-pinned actions",
+      "description": "GitHub Actions: automerge digest, minor and patch bumps of SHA-pinned actions after a 7-day cool-down",
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["digest", "minor", "patch"],
       "groupName": "github actions",
+      "minimumReleaseAge": "7 days",
       "automerge": true,
       "automergeType": "pr"
     }
