@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     permissions:
-      contents: write # uploads the binaries and the checksums to the GitHub release
+      contents: write # uploads the binaries, the checksums and the Sigstore bundle to the GitHub release
       id-token: write # lets actions/attest request a Sigstore signing certificate
       attestations: write # lets actions/attest persist the build provenance attestation
     env:
@@ -73,7 +73,7 @@ jobs:
             apps/cli/dist/workbox-*
             apps/cli/dist/workbox_*_checksums.txt
       - name: Attach the Sigstore bundle to the release assets
-        # Scorecard's Signed-Releases check looks for a *.sigstore.json asset; the bundle also allows offline verification.
+        # Scorecard's Signed-Releases check looks for a *.sigstore.json asset; the bundle also lets gh attestation verify check a download without the attestation API.
         env:
           BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
         run: cp "$BUNDLE_PATH" "apps/cli/dist/workbox_${TAG#v}.sigstore.json"
