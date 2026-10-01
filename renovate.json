@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "group:allNonMajor",
+    ":semanticCommits",
+    ":label(dependencies)",
+    ":timezone(Europe/Prague)",
+    "schedule:weekly"
+  ],
+  "prConcurrentLimit": 10,
+  "minimumReleaseAge": "7 days",
+  "packageRules": [
+    {
+      "description": "devDependencies: shorter cool-down, automerge non-major via GitHub auto-merge",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "minimumReleaseAge": "3 days",
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "GitHub Actions: automerge digest, minor and patch bumps of SHA-pinned actions",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest", "minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
+}

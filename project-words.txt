@@ -24,6 +24,8 @@ codeql
 scorecard
 sarif
 amannn
+ossf
+zizmorcore
 sha256sum
 artefacts
 poisonable
