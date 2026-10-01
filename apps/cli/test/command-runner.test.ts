@@ -42,6 +42,16 @@ describe('bunCommandRunner', () => {
     ]);
     expect(result.stderr).toBe('partial');
   });
+
+  test('a command that a signal ended without printing has an empty stderr, not a timeout note', async () => {
+    const result = await bunCommandRunner.run([
+      'bun',
+      '-e',
+      'process.kill(process.pid, "SIGKILL")',
+    ]);
+    expect(result.exitCode).not.toBe(0);
+    expect(result.stderr).toBe('');
+  });
 });
 
 describe('createBunCommandRunner', () => {
@@ -58,5 +68,17 @@ describe('createBunCommandRunner', () => {
     const runner = createBunCommandRunner({ timeoutMs: 200 });
     const result = await runner.run(['bun', '-e', 'await Bun.sleep(60_000)']);
     expect(result.stderr).toBe('timed out after 200 ms');
+  });
+
+  test('a timed-out command that printed first keeps its text after the timeout note', async () => {
+    // The child's start-up counts against the timeout, so this one is generous: a slow runner must
+    // not cut the child off before it has printed.
+    const runner = createBunCommandRunner({ timeoutMs: 1000 });
+    const result = await runner.run([
+      'bun',
+      '-e',
+      'require("node:fs").writeSync(2, "warming up"); await Bun.sleep(60_000)',
+    ]);
+    expect(result.stderr).toBe('timed out after 1000 ms: warming up');
   });
 });
