@@ -7,14 +7,19 @@ on:
 
 permissions: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   zizmor:
+    name: zizmor
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
-      security-events: write
-      contents: read
-      actions: read
+      security-events: write # uploads the SARIF results to code scanning
+      contents: read # checks out the workflows that zizmor audits
+      actions: read # lets the SARIF upload look up the workflow run that produced it
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

@@ -6,7 +6,10 @@ on:
   schedule:
     - cron: '30 1 * * 6'
 
-permissions: read-all
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   analysis:
@@ -14,8 +17,8 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     permissions:
-      security-events: write
-      id-token: write
+      security-events: write # uploads the SARIF results to code scanning
+      id-token: write # requests the OIDC token that publish_results needs to publish the public score
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
