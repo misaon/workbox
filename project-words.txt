@@ -23,6 +23,7 @@ gitleaks
 codeql
 scorecard
 sarif
+amannn
 sha256sum
 microvm
 sandboxing
