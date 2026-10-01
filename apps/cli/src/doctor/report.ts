@@ -19,16 +19,25 @@ function label(id: CheckId, locale: Locale): string {
 }
 
 /**
+ * A tool's own error text can span several lines, and a check line must stay one line: every run of
+ * whitespace, line breaks included, becomes one space and both ends are trimmed. Only the text
+ * report does this; `--json` prints the check detail as the check produced it.
+ */
+function collapseWhitespace(text: string): string {
+  return text.replaceAll(/\s+/gu, ' ').trim();
+}
+
+/**
  * A code without a value prints its message; `not-found` follows it with what the runner reported
- * on stderr (the tool's own text, or the runner's timeout note) when there is any, and `logged-in`
- * prints the configuration directory when there is one. What is left prints the value the check
- * read: a version, a path or an OS error, so a new code without a value does not compile until it
- * gets a branch here.
+ * on stderr (the tool's own text, or the runner's timeout note) when there is any, collapsed onto
+ * one line, and `logged-in` prints the configuration directory when there is one. What is left
+ * prints the value the check read: a version, a path or an OS error, so a new code without a value
+ * does not compile until it gets a branch here.
  */
 function detailText(detail: CheckDetail, locale: Locale): string {
   if (detail.code === 'not-found') {
     const message = m.cli_doctor_detail_not_found({}, { locale });
-    return detail.value === undefined ? message : `${message}: ${detail.value}`;
+    return detail.value === undefined ? message : `${message}: ${collapseWhitespace(detail.value)}`;
   }
   if (detail.code === 'not-logged-in') {
     return m.cli_doctor_detail_not_logged_in({}, { locale });

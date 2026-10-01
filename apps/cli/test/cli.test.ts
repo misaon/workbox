@@ -47,8 +47,21 @@ describe('workbox', () => {
     }
     expect(result.stderr).toContain('doctor');
     // The debug file sink must exist and hold what the stderr sink printed.
-    expect(await Bun.file(join(home, 'logs', 'workbox.log')).text()).toContain(
-      'running doctor checks',
+    const logText = await Bun.file(join(home, 'logs', 'workbox.log')).text();
+    expect(logText).toContain('running doctor checks');
+    // Every check gets a debug record of its own. LogTape quotes the string placeholders of a
+    // message in JSON Lines, so each check is read from the record's properties. git depends on
+    // the host, so only its id is pinned; Bun types a matcher as `any`, hence the `unknown`.
+    const records = logText
+      .trim()
+      .split('\n')
+      .map((line): unknown => JSON.parse(line));
+    const gitProperties: unknown = expect.objectContaining({ id: 'git' });
+    expect(records).toContainEqual(expect.objectContaining({ properties: gitProperties }));
+    expect(records).toContainEqual(
+      expect.objectContaining({
+        properties: { id: 'workbox-home', status: 'ok', code: 'path', value: home },
+      }),
     );
   });
 

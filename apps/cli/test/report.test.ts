@@ -87,6 +87,11 @@ function checkLine(detail: CheckDetail, locale: Locale): string | undefined {
   return formatDoctorReport(single, locale).split('\n')[1];
 }
 
+/** A report of one failed git check with the given detail. */
+function failedGitReport(detail: CheckDetail): DoctorReport {
+  return { version: '1.2.3', ok: false, checks: [{ id: 'git', status: 'fail', detail }] };
+}
+
 describe('formatDoctorReport', () => {
   test('English', () => {
     const text = formatDoctorReport(report, 'en');
@@ -167,6 +172,37 @@ describe('detail texts', () => {
     );
     expect(checkLine(detail, 'cs')).toBe(
       '✓ přihlášení Claude Code: nenalezeno: xcrun: error: invalid active developer path',
+    );
+  });
+
+  test('not-found keeps a multi-line error text of the tool on one line', () => {
+    // What `xcode-select` prints on a Mac without developer tools: two lines on stderr.
+    const detail: CheckDetail = {
+      code: 'not-found',
+      value:
+        'xcode-select: note: No developer tools were found.\nIf developer tools are located at a non-default location on disk, use …',
+    };
+    // The title, the one check line and the summary: the error text must not add lines of its own.
+    const english = formatDoctorReport(failedGitReport(detail), 'en').split('\n');
+    expect(english).toHaveLength(3);
+    expect(english[1]).toBe(
+      '✗ git: not found: xcode-select: note: No developer tools were found. If developer tools are located at a non-default location on disk, use …',
+    );
+    const czech = formatDoctorReport(failedGitReport(detail), 'cs').split('\n');
+    expect(czech).toHaveLength(3);
+    expect(czech[1]).toBe(
+      '✗ git: nenalezeno: xcode-select: note: No developer tools were found. If developer tools are located at a non-default location on disk, use …',
+    );
+  });
+
+  test('not-found collapses every run of whitespace into one space and trims both ends', () => {
+    // Windows line breaks, a blank line, tabs and indentation around the text.
+    const detail: CheckDetail = {
+      code: 'not-found',
+      value: '  first line \t\r\n\r\n   second   line \n',
+    };
+    expect(formatDoctorReport(failedGitReport(detail), 'en').split('\n')[1]).toBe(
+      '✗ git: not found: first line second line',
     );
   });
 });

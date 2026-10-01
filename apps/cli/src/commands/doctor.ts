@@ -33,6 +33,15 @@ export const doctorCommand = defineCommand({
     const logger = getLogger(['cli', 'doctor']);
     logger.debug('running doctor checks');
     const report = await runDoctor({ runner: bunCommandRunner, env, version: resolveVersion() });
+    for (const check of report.checks) {
+      // Only some detail codes carry a value; the JSON Lines output leaves an undefined one out.
+      logger.debug('doctor check {id}: {status} ({code})', {
+        id: check.id,
+        status: check.status,
+        code: check.detail.code,
+        value: 'value' in check.detail ? check.detail.value : undefined,
+      });
+    }
     writeLine(args.json ? JSON.stringify(report) : formatDoctorReport(report, resolveLocale(env)));
     logger.debug('doctor finished {ok}', { ok: report.ok });
     process.exitCode = report.ok ? EXIT_CODE_SUCCESS : EXIT_CODE_FAILURE;
