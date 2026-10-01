@@ -19,6 +19,7 @@
     "@inlang/paraglide-js": "catalog:dev",
     "@inlang/plugin-message-format": "catalog:dev",
     "@types/bun": "catalog:dev",
+    "fast-check": "catalog:dev",
     "typescript": "catalog:dev"
   }
 }
