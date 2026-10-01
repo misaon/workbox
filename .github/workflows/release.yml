@@ -42,7 +42,6 @@ jobs:
       contents: write # uploads the binaries and the checksums to the GitHub release
       id-token: write # lets actions/attest request a Sigstore signing certificate
       attestations: write # lets actions/attest persist the build provenance attestation
-      artifact-metadata: write # artifact storage record, used only with push-to-registry
     env:
       TAG: ${{ needs.release-please.outputs.tag_name }}
     steps:
