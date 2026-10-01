@@ -1,6 +1,5 @@
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
-// oxlint-disable-next-line vitest/no-importing-vitest-globals -- explicit imports are the Vitest default, test.globals stays off
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { App } from './app.tsx';
@@ -17,7 +16,6 @@ describe('the app', () => {
     document.body.append(container);
     // oxlint-disable-next-line require-await, typescript/require-await -- act() needs an async callback to flush effects and microtasks
     await act(async () => {
-      // oxlint-disable-next-line react/react-in-jsx-scope -- the automatic JSX runtime (jsx: react-jsx) needs no React in scope
       createRoot(container).render(<App />);
     });
     expect(container.querySelector('h1')?.textContent).toBe('Workbox');

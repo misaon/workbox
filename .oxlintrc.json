@@ -83,7 +83,16 @@
     },
     {
       "files": ["apps/web/**/*.tsx", "apps/web/**/*.ts"],
-      "plugins": ["react", "jsx-a11y", "vitest"]
+      "plugins": ["react", "jsx-a11y"],
+      "rules": {
+        "react/react-in-jsx-scope": "off",
+        "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }]
+      }
+    },
+    {
+      "files": ["apps/web/**/*.test.tsx", "apps/web/**/*.test.ts"],
+      "plugins": ["vitest"],
+      "rules": { "vitest/no-importing-vitest-globals": "off" }
     },
     {
       "files": ["apps/cli/src/output/**"],
