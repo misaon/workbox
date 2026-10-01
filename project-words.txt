@@ -25,6 +25,8 @@ scorecard
 sarif
 amannn
 sha256sum
+artefacts
+poisonable
 microvm
 sandboxing
 subagent
