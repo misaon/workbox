@@ -46,3 +46,9 @@ workboxu
 behaviour
 automerges
 misák
+tauri
+xdescribe
+xtest
+xattr
+notarised
+scriptable
