@@ -9,9 +9,9 @@ export type CheckId = 'git' | 'claude-binary' | 'claude-login' | 'workbox-home';
  * What a check found, as data: `--json` prints it as is and `report.ts` turns it into text in the
  * user's locale. `version`, `path` and `os-error` carry what they report (`os-error` as
  * `<path>: <reason>`), `logged-in` carries the configuration directory when `claude auth status`
- * names one, `not-found` carries what the runner reported on stderr (the tool's own text, or the
- * runner's timeout note; a silent failure has no value), and the other codes stand for a fixed
- * message.
+ * names one, `not-found` carries what the runner reported on stderr (the tool's own text, the
+ * runner's timeout note, or the spawn error of a tool that exists but cannot start; a tool missing
+ * from PATH or a silent failure has no value), and the other codes stand for a fixed message.
  */
 export type CheckDetail =
   | { readonly code: 'version'; readonly value: string }
@@ -65,8 +65,9 @@ export function readConfigDirectory(stdout: string): string | null {
 /**
  * A tool that reported no version is "not found", and what the runner reported on stderr tells the
  * user why: the tool's own text (`xcrun: error: invalid active developer path`, a version-manager
- * shim without a version) or the runner's timeout note. A silent failure, or a tool that could not
- * be started, has no value.
+ * shim without a version), the runner's timeout note, or the spawn error of a tool that exists but
+ * cannot start (an `EACCES`, for example). A tool missing from PATH, or a silent failure, has no
+ * value.
  */
 function notFoundDetail(stderr: string): CheckDetail {
   const message = stderr.trim();

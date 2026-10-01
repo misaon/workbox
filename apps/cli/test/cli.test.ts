@@ -16,7 +16,7 @@ setDefaultTimeout(30_000);
 const STUB_SETUP_TIMEOUT_MS = 60_000;
 
 const CLAUDE_DIR = '/home/user/.claude';
-/** What git prints on a Mac without the Command Line Tools, split over two lines of stderr. */
+/** Modelled on a Mac without the Command Line Tools; the two-line split is artificial, so the report has a line break to collapse. */
 const XCRUN_ERROR = [
   'xcrun: error: invalid active developer path',
   'missing xcrun at: /Library/Developer/CommandLineTools/usr/bin/xcrun',
@@ -221,7 +221,7 @@ describe('workbox doctor without git and Claude Code on PATH', () => {
     const home = await scratchDir();
     const result = await doctor(['--json'], { WORKBOX_HOME: home });
     const parsed: unknown = JSON.parse(result.stdout);
-    // A tool that cannot be started has no value: nothing on stderr explains it.
+    // A tool missing from PATH has no value: nothing on stderr explains it.
     expect(parsed).toEqual({
       version: '0.0.0-dev',
       checks: [
