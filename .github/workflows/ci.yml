@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 defaults:
   run:
@@ -24,6 +24,7 @@ env:
 
 jobs:
   static:
+    name: static
     runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
@@ -57,13 +58,14 @@ jobs:
         run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
       - name: Download actionlint
         id: get_actionlint
-        run: bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash) 1.7.12
+        run: bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash) 1.7.12
       - name: Check workflow files
         env:
           ACTIONLINT: ${{ steps.get_actionlint.outputs.executable }}
         run: '"$ACTIONLINT" -color'
 
   test-daemon:
+    name: test-daemon (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
@@ -86,6 +88,7 @@ jobs:
       - run: pnpm turbo run test --filter='./packages/*' --filter='./apps/cli'
 
   test-web:
+    name: test-web
     runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
@@ -110,6 +113,7 @@ jobs:
       - run: pnpm turbo run test --filter='./apps/web'
 
   build:
+    name: build
     runs-on: ubuntu-26.04
     timeout-minutes: 30
     steps:

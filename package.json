@@ -23,7 +23,7 @@
     "ls-lint": "ls-lint",
     "markdownlint": "markdownlint-cli2",
     "prepare": "lefthook install",
-    "spell": "cspell lint --no-progress --gitignore \"**\"",
+    "spell": "cspell lint --no-progress --gitignore --dot \"**\"",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json"
   },

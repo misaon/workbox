@@ -18,6 +18,10 @@
     "LICENSE",
     "docs/superpowers/research/**",
     "docs/superpowers/**",
+    ".git",
+    ".claude/**",
+    ".superpowers/**",
+    ".worktrees/**",
     "/project-words.txt"
   ],
   "useGitignore": true
