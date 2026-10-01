@@ -56,13 +56,11 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose
-      - name: Download actionlint
-        id: get_actionlint
-        run: bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/914e7df21a07ef503a81201c76d2b11c789d3fca/scripts/download-actionlint.bash) 1.7.12
       - name: Check workflow files
-        env:
-          ACTIONLINT: ${{ steps.get_actionlint.outputs.executable }}
-        run: '"$ACTIONLINT" -color'
+        # The official image bundles actionlint, shellcheck and pyflakes. The digest pins it; Renovate bumps tag and digest together.
+        uses: docker://rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
+        with:
+          args: -color
 
   test-daemon:
     name: test-daemon (${{ matrix.os }})

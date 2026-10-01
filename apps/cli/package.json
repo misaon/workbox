@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build:binaries": "bun run scripts/build-binaries.ts",
+    "check:dist": "bun run scripts/check-dist.ts",
     "dev": "bun run --watch src/main.ts",
     "test": "bun test",
     "test:binary": "bun test binary",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@types/bun": "catalog:dev",
+    "fast-check": "catalog:dev",
     "typescript": "catalog:dev"
   }
 }

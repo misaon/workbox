@@ -36,6 +36,7 @@ catalogs:
     '@vitest/browser-playwright': ^5.0.3
     babel-plugin-react-compiler: ^1.0.0
     cspell: ^10.3.6
+    fast-check: ^4.10.2
     knip: ^6.39.0
     # ^2.1.14, not ^2.1.15, on purpose: lefthook 2.1.0 to 2.1.14 were published by GitHub Actions with
     # trusted-publisher provenance, but 2.1.15 (2026-09-29) came from a personal npm account without
