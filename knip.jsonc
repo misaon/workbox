@@ -18,7 +18,8 @@
       "ignoreDependencies": ["@inlang/plugin-message-format"],
     },
     "apps/cli": {
-      "entry": ["test/**/*.test.ts"],
+      // Fixtures are spawned as child processes by the tests, so no file imports them.
+      "entry": ["test/**/*.test.ts", "test/fixtures/*.ts"],
       "project": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"],
     },
     "apps/web": {
