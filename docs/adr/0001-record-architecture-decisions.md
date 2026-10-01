@@ -9,7 +9,7 @@ Workbox makes many bleeding-edge technology choices that were verified online at
 
 ## Decision
 
-Every decision that shapes the architecture or the toolchain gets a numbered Markdown file in `docs/adr` with the sections Context, Decision and Consequences. Superseded records stay in place with their status updated.
+Every decision that shapes the architecture or the toolchain gets a numbered Markdown file in `docs/adr` with the sections Context, Decision and Consequences. Superseded records stay in place with their status updated. Where the spec and an ADR disagree, the ADR records the as-built decision and wins; the spec is amended afterwards.
 
 ## Consequences
 

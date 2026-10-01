@@ -17,4 +17,4 @@ The web client has its own lint override ([ADR 0005](0005-oxlint-and-oxfmt-with-
 
 ## Consequences
 
-The office canvas is a React island around PixiJS (plan 5); the phone client (product plan 6) can share components. `babel-plugin-react-compiler` 1.0 still brings `@babel/types` 7 next to the `@babel/types` 8 of Babel 8, so two major versions of Babel's types coexist in the tree. That works for the current skeleton, whose output matched the Babel 7 build, but the Compiler's output deserves a second look as the client grows.
+The office canvas is a React island around PixiJS (plan 5); the phone client (product plan 6) can share components. `babel-plugin-react-compiler` 1.0 still brings `@babel/types` 7 next to the `@babel/types` 8 of Babel 8, so two major versions of Babel's types coexist in the tree. That works for the current skeleton, whose output matched the Babel 7 build, but the Compiler's output deserves a second look as the client grows. The component tests do not exercise it: `apps/web/vitest.config.ts` runs them without the React Compiler preset, so production builds are compiled and the tests are not.

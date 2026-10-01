@@ -2,7 +2,7 @@
 
 <p align="center">
   Your AI coding agents, as employees in a pixel-art office.<br />
-  Local-first. Runs on your Claude and ChatGPT subscriptions. Browser, desktop and CLI from one command.
+  Local-first. Will run on your Claude and ChatGPT subscriptions. Browser, desktop and CLI from one command.
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 ## Why Workbox
 
 - **You see what your agents do.** Every session is an employee on a floor: walking to a desk, typing, raising a hand when it needs you, getting coffee while it waits. One floor per project.
-- **No new bills.** Workbox drives the unmodified Claude Code and Codex binaries with the logins you already have. It never reads, copies or stores vendor credentials.
+- **No new bills.** Workbox will drive the unmodified Claude Code and Codex binaries with the logins you already have. It never reads, copies or stores vendor credentials.
 - **One binary everywhere.** The same `workbox` command is the CLI, the daemon and the web server. A thin desktop shell and a phone client connect to it.
 - **Built to be studied.** Append-only event log as the single source of truth, headless deterministic office simulation, vendor-neutral harness and sandbox ports, pedantic tooling.
 
@@ -37,7 +37,7 @@ On macOS the downloaded binary is quarantined until releases are notarised: `xat
 ## Build from source
 
 ```bash
-git clone git@github.com:misaon/workbox.git && cd workbox
+git clone https://github.com/misaon/workbox.git && cd workbox
 pnpm install
 pnpm check            # the static checks and tests CI runs
 pnpm build:binaries   # all eight targets into apps/cli/dist/workbox-<os>-<arch>

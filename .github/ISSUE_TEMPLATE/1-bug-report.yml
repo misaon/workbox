@@ -38,6 +38,7 @@ body:
     id: doctor
     attributes:
       label: Output of `workbox doctor --json`
+      description: The output includes your home directory path; redact anything you do not want to share.
       render: json
   - type: checkboxes
     id: checks

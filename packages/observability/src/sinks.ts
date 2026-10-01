@@ -8,9 +8,9 @@ const MAX_LOG_FILE_BYTES = 5_242_880;
 const MAX_LOG_FILES = 5;
 /**
  * Zero turns LogTape's write buffer off, so every record is written (and synced) as it is logged.
- * LogTape flushes a buffered file sink only when the sink is disposed, and the exit hook that
- * `configure()` registers is async, so its disposal never runs before the process ends. A buffered
- * log file stays empty after a short CLI run and loses its tail in a crash.
+ * LogTape flushes a buffered file sink on dispose, once 8 KiB has accumulated, or on the first
+ * record 5 s after the last flush; with the async `configure()` exit hook a short CLI run ends
+ * before any of those, so the sink is unbuffered. A buffer would also lose its tail in a crash.
  */
 const LOG_BUFFER_BYTES = 0;
 

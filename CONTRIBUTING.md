@@ -13,7 +13,7 @@ Thanks for helping. Workbox is a pnpm + Turborepo monorepo; the daemon runs on B
 ## Set up
 
 ```bash
-git clone git@github.com:misaon/workbox.git
+git clone https://github.com/misaon/workbox.git
 cd workbox
 pnpm install
 pnpm check
