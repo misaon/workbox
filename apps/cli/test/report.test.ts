@@ -29,6 +29,25 @@ const loggedOutReport: DoctorReport = {
   ],
 };
 
+/**
+ * Claude Code is installed but its binary fails (a version-manager shim without a version): its own
+ * error text shows and the install hint stays.
+ */
+const brokenClaudeReport: DoctorReport = {
+  version: '1.2.3',
+  ok: true,
+  checks: [
+    { id: 'git', status: 'ok', detail: { code: 'version', value: '2.51.0' } },
+    {
+      id: 'claude-binary',
+      status: 'warn',
+      detail: { code: 'not-found', value: 'asdf: No version is set for command claude' },
+    },
+    { id: 'claude-login', status: 'warn', detail: { code: 'skipped-no-binary' } },
+    { id: 'workbox-home', status: 'ok', detail: { code: 'path', value: '/home/u/.workbox' } },
+  ],
+};
+
 interface DetailTexts {
   readonly detail: CheckDetail;
   readonly en: string;
@@ -107,6 +126,22 @@ describe('formatDoctorReport', () => {
     expect(text).not.toContain('Nainstalujte Claude Code');
     expect(text).not.toContain('logged in');
   });
+
+  test('English error text and install hint when the Claude Code binary fails', () => {
+    const text = formatDoctorReport(brokenClaudeReport, 'en');
+    expect(text).toContain(
+      '! Claude Code binary: not found: asdf: No version is set for command claude',
+    );
+    expect(text).toContain('Install Claude Code');
+  });
+
+  test('Czech error text and install hint when the Claude Code binary fails', () => {
+    const text = formatDoctorReport(brokenClaudeReport, 'cs');
+    expect(text).toContain(
+      '! binárka Claude Code: nenalezeno: asdf: No version is set for command claude',
+    );
+    expect(text).toContain('Nainstalujte Claude Code');
+  });
 });
 
 describe('detail texts', () => {
@@ -120,5 +155,18 @@ describe('detail texts', () => {
     const detail: CheckDetail = { code: 'logged-in', value: '/home/u/.claude' };
     expect(checkLine(detail, 'en')).toBe('✓ Claude Code login: /home/u/.claude');
     expect(checkLine(detail, 'cs')).toBe('✓ přihlášení Claude Code: /home/u/.claude');
+  });
+
+  test('not-found prints the error text of the tool after the message when there is one', () => {
+    const detail: CheckDetail = {
+      code: 'not-found',
+      value: 'xcrun: error: invalid active developer path',
+    };
+    expect(checkLine(detail, 'en')).toBe(
+      '✓ Claude Code login: not found: xcrun: error: invalid active developer path',
+    );
+    expect(checkLine(detail, 'cs')).toBe(
+      '✓ přihlášení Claude Code: nenalezeno: xcrun: error: invalid active developer path',
+    );
   });
 });

@@ -9,14 +9,15 @@ export type CheckId = 'git' | 'claude-binary' | 'claude-login' | 'workbox-home';
  * What a check found, as data: `--json` prints it as is and `report.ts` turns it into text in the
  * user's locale. `version`, `path` and `os-error` carry what they report (`os-error` as
  * `<path>: <reason>`), `logged-in` carries the configuration directory when `claude auth status`
- * names one, and the other codes stand for a fixed message.
+ * names one, `not-found` carries what the tool printed on stderr when it ran and failed (nothing
+ * when it could not be started), and the other codes stand for a fixed message.
  */
 export type CheckDetail =
   | { readonly code: 'version'; readonly value: string }
   | { readonly code: 'path'; readonly value: string }
   | { readonly code: 'os-error'; readonly value: string }
   | { readonly code: 'logged-in'; readonly value?: string }
-  | { readonly code: 'not-found' }
+  | { readonly code: 'not-found'; readonly value?: string }
   | { readonly code: 'not-logged-in' }
   | { readonly code: 'skipped-no-binary' };
 
@@ -60,12 +61,22 @@ export function readConfigDirectory(stdout: string): string | null {
   return NOT_FOUND;
 }
 
+/**
+ * A tool that reported no version is "not found", and what it printed on stderr tells the user why
+ * (`xcrun: error: invalid active developer path`, a version-manager shim without a version). A tool
+ * that could not be started printed nothing, so its detail has no value.
+ */
+function notFoundDetail(stderr: string): CheckDetail {
+  const message = stderr.trim();
+  return message === '' ? { code: 'not-found' } : { code: 'not-found', value: message };
+}
+
 export async function checkGit(runner: CommandRunner): Promise<CheckResult> {
   const result = await runner.run(['git', '--version']);
   const version =
     result.exitCode === EXIT_CODE_SUCCESS ? parseGitVersion(result.stdout) : NOT_FOUND;
   if (version === null) {
-    return { id: 'git', status: 'fail', detail: { code: 'not-found' } };
+    return { id: 'git', status: 'fail', detail: notFoundDetail(result.stderr) };
   }
   return { id: 'git', status: 'ok', detail: { code: 'version', value: version } };
 }
@@ -75,7 +86,7 @@ export async function checkClaudeBinary(runner: CommandRunner): Promise<CheckRes
   const version =
     result.exitCode === EXIT_CODE_SUCCESS ? parseClaudeVersion(result.stdout) : NOT_FOUND;
   if (version === null) {
-    return { id: 'claude-binary', status: 'warn', detail: { code: 'not-found' } };
+    return { id: 'claude-binary', status: 'warn', detail: notFoundDetail(result.stderr) };
   }
   return { id: 'claude-binary', status: 'ok', detail: { code: 'version', value: version } };
 }

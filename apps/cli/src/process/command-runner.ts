@@ -7,6 +7,11 @@ const COMMAND_TIMEOUT_MS = 15_000;
 export interface CommandResult {
   readonly exitCode: number;
   readonly stdout: string;
+  /**
+   * What the command printed on stderr, because callers show it as the reason a command failed. It
+   * is empty when the command could not be spawned, and `timed out after <N> ms` when the timeout
+   * cut off a command that had printed nothing.
+   */
   readonly stderr: string;
 }
 
@@ -32,13 +37,15 @@ export function createBunCommandRunner(
           proc.stderr.text(),
           proc.exited,
         ]);
-        return { exitCode, stdout, stderr };
-      } catch (error) {
-        return {
-          exitCode: EXIT_CODE_COMMAND_NOT_FOUND,
-          stdout: '',
-          stderr: error instanceof Error ? error.message : String(error),
-        };
+        // The timeout is the only signal this runner sends, so a command that a signal ended
+        // without a word was cut off by it.
+        const timedOut = proc.signalCode !== null && stderr.trim() === '';
+        return { exitCode, stdout, stderr: timedOut ? `timed out after ${timeoutMs} ms` : stderr };
+      } catch {
+        // Bun could not spawn the command, for example because it is not on PATH. The error is
+        // Bun's English text, not output of the command, so stderr stays empty and the report says
+        // a plain "not found" in the user's language.
+        return { exitCode: EXIT_CODE_COMMAND_NOT_FOUND, stdout: '', stderr: '' };
       }
     },
   };

@@ -14,12 +14,15 @@ import {
 } from '../src/doctor/checks.ts';
 import type { CommandResult, CommandRunner } from '../src/process/command-runner.ts';
 
+/**
+ * A command that is not listed behaves like a missing executable: exit code 127 and no stderr, as
+ * `bunCommandRunner` returns it.
+ */
 function runnerReturning(results: Readonly<Record<string, CommandResult>>): CommandRunner {
   return {
     run: (command) => {
-      const key = command.join(' ');
-      const result = results[key];
-      return Promise.resolve(result ?? { exitCode: 127, stdout: '', stderr: `not found: ${key}` });
+      const result = results[command.join(' ')];
+      return Promise.resolve(result ?? { exitCode: 127, stdout: '', stderr: '' });
     },
   };
 }
@@ -63,6 +66,32 @@ describe('checks', () => {
     });
   });
 
+  test('git that runs but fails keeps the error text it printed', async () => {
+    const runner = runnerReturning({
+      'git --version': {
+        exitCode: 1,
+        stdout: '',
+        stderr: 'xcrun: error: invalid active developer path\n',
+      },
+    });
+    expect(await checkGit(runner)).toEqual({
+      id: 'git',
+      status: 'fail',
+      detail: { code: 'not-found', value: 'xcrun: error: invalid active developer path' },
+    });
+  });
+
+  test('git that exits 0 without a version still reports its error text', async () => {
+    const runner = runnerReturning({
+      'git --version': { exitCode: 0, stdout: 'usage: git', stderr: 'shim: no real git\n' },
+    });
+    expect(await checkGit(runner)).toEqual({
+      id: 'git',
+      status: 'fail',
+      detail: { code: 'not-found', value: 'shim: no real git' },
+    });
+  });
+
   test('claude binary present reports its version', async () => {
     const runner = runnerReturning({
       'claude --version': { exitCode: 0, stdout: '2.1.285 (Claude Code)\n', stderr: '' },
@@ -80,6 +109,32 @@ describe('checks', () => {
       status: 'warn',
       detail: { code: 'not-found' },
     });
+  });
+
+  test('claude binary that runs but fails keeps the error text it printed', async () => {
+    const runner = runnerReturning({
+      'claude --version': {
+        exitCode: 126,
+        stdout: '',
+        stderr: 'asdf: No version is set for command claude\n',
+      },
+    });
+    expect(await checkClaudeBinary(runner)).toEqual({
+      id: 'claude-binary',
+      status: 'warn',
+      detail: { code: 'not-found', value: 'asdf: No version is set for command claude' },
+    });
+  });
+
+  test('a failing git or claude binary whose stderr is blank has no value', async () => {
+    const blank: CommandResult = { exitCode: 1, stdout: '', stderr: ' \n' };
+    const git = await checkGit(runnerReturning({ 'git --version': blank }));
+    const claude = await checkClaudeBinary(runnerReturning({ 'claude --version': blank }));
+    expect(git.detail).toEqual({ code: 'not-found' });
+    expect(claude.detail).toEqual({ code: 'not-found' });
+    // A missing value is an absent property, not `value: undefined`.
+    expect(git.detail).not.toHaveProperty('value');
+    expect(claude.detail).not.toHaveProperty('value');
   });
 
   test('claude login uses the exit code as the source of truth', async () => {

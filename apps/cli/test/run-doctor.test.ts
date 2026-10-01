@@ -3,15 +3,18 @@ import { mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import type { CheckDetail } from '../src/doctor/checks.ts';
 import { runDoctor } from '../src/doctor/run-doctor.ts';
 import type { CommandResult, CommandRunner } from '../src/process/command-runner.ts';
 
+/**
+ * A command that is not listed behaves like a missing executable: exit code 127 and no stderr, as
+ * `bunCommandRunner` returns it.
+ */
 function runnerReturning(results: Readonly<Record<string, CommandResult>>): CommandRunner {
   return {
     run: (command) =>
-      Promise.resolve(
-        results[command.join(' ')] ?? { exitCode: 127, stdout: '', stderr: 'not found' },
-      ),
+      Promise.resolve(results[command.join(' ')] ?? { exitCode: 127, stdout: '', stderr: '' }),
   };
 }
 
@@ -75,5 +78,30 @@ describe('runDoctor', () => {
     });
     expect(report.ok).toBe(false);
     expect(report.checks[0]).toEqual({ id: 'git', status: 'fail', detail: { code: 'not-found' } });
+  });
+
+  test('a git that runs but fails keeps its error text in the report and in its JSON', async () => {
+    const home = await mkdtemp(join(tmpdir(), 'workbox-doctor-'));
+    const report = await runDoctor({
+      runner: runnerReturning({
+        'git --version': {
+          exitCode: 1,
+          stdout: '',
+          stderr: 'xcrun: error: invalid active developer path\n',
+        },
+      }),
+      env: { WORKBOX_HOME: home },
+      version: '1.2.3',
+    });
+    const detail: CheckDetail = {
+      code: 'not-found',
+      value: 'xcrun: error: invalid active developer path',
+    };
+    expect(report.ok).toBe(false);
+    expect(report.checks[0]).toEqual({ id: 'git', status: 'fail', detail });
+    // `doctor --json` prints this report object through JSON.stringify.
+    const json = JSON.stringify(report);
+    const printed: unknown = JSON.parse(json);
+    expect(printed).toHaveProperty(['checks', 0, 'detail'], detail);
   });
 });
