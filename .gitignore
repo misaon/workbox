@@ -1,0 +1,16 @@
+node_modules/
+dist/
+coverage/
+.turbo/
+**/src/paraglide/
+**/project.inlang/cache/
+*.log
+*.bun-build
+.DS_Store
+.idea/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+.vitest/

@@ -1,0 +1,26 @@
+{
+  "name": "@workbox/cli",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The workbox command: CLI, daemon and web server in one Bun binary.",
+  "type": "module",
+  "exports": {
+    ".": "./src/main.ts"
+  },
+  "scripts": {
+    "build:binaries": "bun run scripts/build-binaries.ts",
+    "dev": "bun run --watch src/main.ts",
+    "test": "bun test",
+    "test:binary": "bun test binary",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@workbox/i18n": "workspace:*",
+    "@workbox/observability": "workspace:*",
+    "citty": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:dev",
+    "typescript": "catalog:dev"
+  }
+}

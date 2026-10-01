@@ -1,0 +1,7 @@
+# actionlint 1.7.12, the version ci.yml pins, was released before the GitHub-hosted ubuntu-26.04 runner
+# became generally available (2026-09-17) and reports its label as unknown. Declaring the label here
+# keeps the runner-label check on for every other label. Remove the entry once the pinned actionlint
+# version knows ubuntu-26.04.
+self-hosted-runner:
+  labels:
+    - ubuntu-26.04

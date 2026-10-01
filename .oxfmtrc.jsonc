@@ -1,0 +1,16 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 100,
+  "singleQuote": true,
+  "sortImports": true,
+  "sortPackageJson": true,
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/paraglide/**",
+    "**/coverage/**",
+    "pnpm-lock.yaml",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "docs/superpowers/**",
+  ],
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "stream",
+  "agentGuidance": false,
+  "globalDependencies": ["tsconfig.base.json", ".bun-version", "pnpm-workspace.yaml"],
+  "globalEnv": ["CI"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "src/paraglide/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["build", "^build"]
+    },
+    "test": {
+      "dependsOn": ["build", "^build"],
+      "outputs": [],
+      "env": ["WORKBOX_HOME", "WORKBOX_DEBUG", "WORKBOX_LOCALE", "WORKBOX_BINARY_TEST"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    }
+  },
+  "boundaries": {
+    "tags": {
+      "protocol": {
+        "dependencies": {
+          "deny": [
+            "i18n",
+            "observability",
+            "core",
+            "adapter",
+            "sim",
+            "render",
+            "app-web",
+            "app-cli"
+          ]
+        }
+      },
+      "i18n": {
+        "dependencies": {
+          "deny": ["observability", "core", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "observability": {
+        "dependencies": {
+          "deny": ["i18n", "core", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "core": {
+        "dependencies": {
+          "deny": ["i18n", "observability", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "sim": {
+        "dependencies": {
+          "deny": ["i18n", "observability", "core", "adapter", "render", "app-web", "app-cli"]
+        }
+      },
+      "adapter": { "dependencies": { "deny": ["adapter", "sim", "render", "app-web", "app-cli"] } },
+      "render": {
+        "dependencies": { "deny": ["observability", "core", "adapter", "app-web", "app-cli"] }
+      },
+      "app-web": { "dependencies": { "deny": ["observability", "core", "adapter", "app-cli"] } },
+      "app-cli": {}
+    }
+  }
+}

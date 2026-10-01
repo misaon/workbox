@@ -1,0 +1,25 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "rules": {
+    "no-restricted-globals": [
+      "error",
+      { "name": "Bun", "message": "protocol must stay runtime-neutral" },
+      { "name": "process", "message": "protocol must stay runtime-neutral" }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          { "group": ["bun:*", "node:*"], "message": "protocol must stay runtime-neutral" }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["test/**"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ]
+}

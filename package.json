@@ -1,0 +1,51 @@
+{
+  "name": "workbox-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workbox: an open-source, local-first orchestrator for AI coding agents, visualised as a pixel-art office.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/misaon/workbox.git"
+  },
+  "type": "module",
+  "scripts": {
+    "boundaries": "turbo boundaries",
+    "build": "turbo run build",
+    "build:binaries": "turbo run build:binaries",
+    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run boundaries && pnpm run knip && pnpm run spell && pnpm run markdownlint && pnpm run ls-lint",
+    "dev": "turbo run dev",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "knip": "knip",
+    "lint": "oxlint --type-aware --deny-warnings",
+    "lint:fix": "oxlint --type-aware --fix",
+    "ls-lint": "ls-lint",
+    "markdownlint": "markdownlint-cli2",
+    "prepare": "lefthook install",
+    "spell": "cspell lint --no-progress --gitignore --dot \"**\"",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck && tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "catalog:dev",
+    "@commitlint/config-conventional": "catalog:dev",
+    "@commitlint/types": "catalog:dev",
+    "@cspell/dict-cs-cz": "catalog:dev",
+    "@ls-lint/ls-lint": "catalog:dev",
+    "cspell": "catalog:dev",
+    "knip": "catalog:dev",
+    "lefthook": "catalog:dev",
+    "markdownlint-cli2": "catalog:dev",
+    "oxfmt": "catalog:dev",
+    "oxlint": "catalog:dev",
+    "oxlint-tsgolint": "catalog:dev",
+    "turbo": "catalog:dev",
+    "typescript": "catalog:dev"
+  },
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=12.8.1"
+  },
+  "packageManager": "pnpm@12.8.1"
+}

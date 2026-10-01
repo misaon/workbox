@@ -1,0 +1,33 @@
+{
+  "name": "@workbox/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workbox web client: dashboard, chat and the pixel-art office.",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@workbox/i18n": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@babel/core": "catalog:dev",
+    "@rolldown/plugin-babel": "catalog:dev",
+    "@tailwindcss/vite": "catalog:dev",
+    "@types/react": "catalog:dev",
+    "@types/react-dom": "catalog:dev",
+    "@vitejs/plugin-react": "catalog:dev",
+    "@vitest/browser-playwright": "catalog:dev",
+    "babel-plugin-react-compiler": "catalog:dev",
+    "playwright": "catalog:dev",
+    "tailwindcss": "catalog:dev",
+    "typescript": "catalog:dev",
+    "vite": "catalog:dev",
+    "vitest": "catalog:dev"
+  }
+}

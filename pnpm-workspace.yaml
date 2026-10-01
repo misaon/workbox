@@ -1,0 +1,156 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Runtime dependencies only. Dev tooling lives in the named catalog `dev` below, so Renovate can
+# give it its own automerge policy (renovate.json matches the dependency type pnpm.catalog.dev).
+catalog:
+  '@logtape/file': ^2.3.10
+  '@logtape/logtape': ^2.3.10
+  '@logtape/redaction': ^2.3.10
+  citty: ^0.2.2
+  react: ^19.3.0
+  react-dom: ^19.3.0
+  zod: ^4.6.5
+
+catalogs:
+  dev:
+    # ^8.0.6, not ^7.29.0, on purpose: every @babel/core 7.x from 7.22.9 on depends on semver ^6.3.1,
+    # and semver 6.3.1 (a 2023-07-10 backport) was published without provenance after semver 7.5.1
+    # had it, so trustPolicy no-downgrade rejects it as a possible package takeover. Babel 8 needs no
+    # semver 6 (8.0.5 and later use verkit instead of semver) and its stable releases carry provenance.
+    '@babel/core': ^8.0.6
+    '@commitlint/cli': ^21.2.3
+    '@commitlint/config-conventional': ^21.2.3
+    '@commitlint/types': ^21.2.3
+    '@cspell/dict-cs-cz': ^3.0.8
+    '@inlang/paraglide-js': ^2.25.4
+    '@inlang/plugin-message-format': ^4.4.4
+    '@ls-lint/ls-lint': ^2.3.1
+    '@rolldown/plugin-babel': ^0.2.4
+    '@tailwindcss/vite': ^4.3.3
+    '@types/bun': ^1.4.2
+    '@types/react': ^19.3.0
+    '@types/react-dom': ^19.3.0
+    '@vitejs/plugin-react': ^6.1.1
+    '@vitest/browser-playwright': ^5.0.3
+    babel-plugin-react-compiler: ^1.0.0
+    cspell: ^10.3.6
+    knip: ^6.39.0
+    # ^2.1.14, not ^2.1.15, on purpose: lefthook 2.1.0 to 2.1.14 were published by GitHub Actions with
+    # trusted-publisher provenance, but 2.1.15 (2026-09-29) came from a personal npm account without
+    # any attestation, so trustPolicy no-downgrade rejects it as a possible package takeover and pnpm
+    # resolves 2.1.14 instead. A later release that carries provenance again is picked up as usual.
+    lefthook: ^2.1.14
+    markdownlint-cli2: ^0.23.3
+    oxfmt: ^0.71.0
+    oxlint: ^1.86.0
+    oxlint-tsgolint: ^7.0.2003
+    playwright: ^1.63.0
+    tailwindcss: ^4.3.3
+    turbo: ^2.11.5
+    typescript: ^7.0.2
+    vite: ^8.3.1
+    vitest: ^5.0.3
+
+minimumReleaseAge: 4320
+minimumReleaseAgeExclude:
+  # remove after 2026-10-01: turbo 2.11.5 and its platform binaries were published on 2026-09-28,
+  # so they are younger than minimumReleaseAge (3 days) until then.
+  - 'turbo@2.11.5'
+  - '@turbo/darwin-64@2.11.5'
+  - '@turbo/darwin-arm64@2.11.5'
+  - '@turbo/linux-64@2.11.5'
+  - '@turbo/linux-arm64@2.11.5'
+  - '@turbo/windows-64@2.11.5'
+  - '@turbo/windows-arm64@2.11.5'
+  # remove after 2026-10-01: oxfmt 0.71.0, oxlint 1.86.0 and their platform bindings were published
+  # on 2026-09-28, so they are younger than minimumReleaseAge (3 days) until then.
+  - 'oxfmt@0.71.0'
+  - '@oxfmt/binding-android-arm-eabi@0.71.0'
+  - '@oxfmt/binding-android-arm64@0.71.0'
+  - '@oxfmt/binding-darwin-arm64@0.71.0'
+  - '@oxfmt/binding-darwin-x64@0.71.0'
+  - '@oxfmt/binding-freebsd-x64@0.71.0'
+  - '@oxfmt/binding-linux-arm-gnueabihf@0.71.0'
+  - '@oxfmt/binding-linux-arm-musleabihf@0.71.0'
+  - '@oxfmt/binding-linux-arm64-gnu@0.71.0'
+  - '@oxfmt/binding-linux-arm64-musl@0.71.0'
+  - '@oxfmt/binding-linux-ppc64-gnu@0.71.0'
+  - '@oxfmt/binding-linux-riscv64-gnu@0.71.0'
+  - '@oxfmt/binding-linux-riscv64-musl@0.71.0'
+  - '@oxfmt/binding-linux-s390x-gnu@0.71.0'
+  - '@oxfmt/binding-linux-x64-gnu@0.71.0'
+  - '@oxfmt/binding-linux-x64-musl@0.71.0'
+  - '@oxfmt/binding-openharmony-arm64@0.71.0'
+  - '@oxfmt/binding-win32-arm64-msvc@0.71.0'
+  - '@oxfmt/binding-win32-ia32-msvc@0.71.0'
+  - '@oxfmt/binding-win32-x64-msvc@0.71.0'
+  - 'oxlint@1.86.0'
+  - '@oxlint/binding-android-arm-eabi@1.86.0'
+  - '@oxlint/binding-android-arm64@1.86.0'
+  - '@oxlint/binding-darwin-arm64@1.86.0'
+  - '@oxlint/binding-darwin-x64@1.86.0'
+  - '@oxlint/binding-freebsd-x64@1.86.0'
+  - '@oxlint/binding-linux-arm-gnueabihf@1.86.0'
+  - '@oxlint/binding-linux-arm-musleabihf@1.86.0'
+  - '@oxlint/binding-linux-arm64-gnu@1.86.0'
+  - '@oxlint/binding-linux-arm64-musl@1.86.0'
+  - '@oxlint/binding-linux-ppc64-gnu@1.86.0'
+  - '@oxlint/binding-linux-riscv64-gnu@1.86.0'
+  - '@oxlint/binding-linux-riscv64-musl@1.86.0'
+  - '@oxlint/binding-linux-s390x-gnu@1.86.0'
+  - '@oxlint/binding-linux-x64-gnu@1.86.0'
+  - '@oxlint/binding-linux-x64-musl@1.86.0'
+  - '@oxlint/binding-openharmony-arm64@1.86.0'
+  - '@oxlint/binding-win32-arm64-msvc@1.86.0'
+  - '@oxlint/binding-win32-ia32-msvc@1.86.0'
+  - '@oxlint/binding-win32-x64-msvc@1.86.0'
+  # remove after 2026-10-02: @logtape/file, @logtape/logtape and @logtape/redaction 2.3.10 were
+  # published on 2026-09-29, so they are younger than minimumReleaseAge (3 days) until then.
+  - '@logtape/file@2.3.10'
+  - '@logtape/logtape@2.3.10'
+  - '@logtape/redaction@2.3.10'
+  # remove after 2026-10-03: vitest 5.0.3 and the @vitest packages below were published on
+  # 2026-09-30, so they are younger than minimumReleaseAge (3 days) until then.
+  - 'vitest@5.0.3'
+  - '@vitest/browser@5.0.3'
+  - '@vitest/browser-playwright@5.0.3'
+  - '@vitest/mocker@5.0.3'
+  - '@vitest/pretty-format@5.0.3'
+  - '@vitest/spy@5.0.3'
+  - '@vitest/ui@5.0.3'
+  - '@vitest/utils@5.0.3'
+  # remove after 2026-10-02: cspell 10.3.6 and the cspell packages below were published on
+  # 2026-09-29, so they are younger than minimumReleaseAge (3 days) until then.
+  - 'cspell@10.3.6'
+  - '@cspell/cspell-bundled-dicts@10.3.6'
+  - '@cspell/cspell-json-reporter@10.3.6'
+  - '@cspell/cspell-performance-monitor@10.3.6'
+  - '@cspell/cspell-pipe@10.3.6'
+  - '@cspell/cspell-resolver@10.3.6'
+  - '@cspell/cspell-service-bus@10.3.6'
+  - '@cspell/cspell-types@10.3.6'
+  - '@cspell/cspell-worker@10.3.6'
+  - '@cspell/dynamic-import@10.3.6'
+  - '@cspell/filetypes@10.3.6'
+  - '@cspell/rpc@10.3.6'
+  - '@cspell/strong-weak-map@10.3.6'
+  - '@cspell/url@10.3.6'
+  - 'cspell-config-lib@10.3.6'
+  - 'cspell-dictionary@10.3.6'
+  - 'cspell-gitignore@10.3.6'
+  - 'cspell-glob@10.3.6'
+  - 'cspell-grammar@10.3.6'
+  - 'cspell-io@10.3.6'
+  - 'cspell-lib@10.3.6'
+  - 'cspell-trie-lib@10.3.6'
+  # remove after 2026-10-03: knip 6.39.0 was published on 2026-09-30, so it is younger than
+  # minimumReleaseAge (3 days) until then.
+  - 'knip@6.39.0'
+trustPolicy: no-downgrade
+blockExoticSubdeps: true
+strictDepBuilds: true
+allowBuilds:
+  lefthook: true
+  playwright: true

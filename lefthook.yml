@@ -1,0 +1,22 @@
+min_version: 2.0.0
+
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      glob: '*.{js,mjs,ts,tsx,json,jsonc,md,yml,yaml,css,toml}'
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
+      stage_fixed: true
+    - name: lint
+      glob: '*.{js,mjs,ts,tsx}'
+      run: pnpm exec oxlint --type-aware --deny-warnings {staged_files}
+
+commit-msg:
+  commands:
+    'lint commit message':
+      run: pnpm exec commitlint --edit {1}
+
+pre-push:
+  jobs:
+    - name: typecheck-and-test
+      run: pnpm turbo run typecheck test --affected
