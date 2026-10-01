@@ -25,14 +25,45 @@
   },
   "boundaries": {
     "tags": {
-      "leaf": {
-        "dependencies": { "deny": ["core", "adapter", "sim", "render", "app-web", "app-cli"] }
+      "protocol": {
+        "dependencies": {
+          "deny": [
+            "i18n",
+            "observability",
+            "core",
+            "adapter",
+            "sim",
+            "render",
+            "app-web",
+            "app-cli"
+          ]
+        }
       },
-      "core": { "dependencies": { "deny": ["adapter", "sim", "render", "app-web", "app-cli"] } },
-      "sim": { "dependencies": { "deny": ["core", "adapter", "render", "app-web", "app-cli"] } },
+      "i18n": {
+        "dependencies": {
+          "deny": ["observability", "core", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "observability": {
+        "dependencies": {
+          "deny": ["i18n", "core", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "core": {
+        "dependencies": {
+          "deny": ["i18n", "observability", "adapter", "sim", "render", "app-web", "app-cli"]
+        }
+      },
+      "sim": {
+        "dependencies": {
+          "deny": ["i18n", "observability", "core", "adapter", "render", "app-web", "app-cli"]
+        }
+      },
       "adapter": { "dependencies": { "deny": ["adapter", "sim", "render", "app-web", "app-cli"] } },
-      "render": { "dependencies": { "deny": ["core", "adapter", "app-web", "app-cli"] } },
-      "app-web": { "dependencies": { "deny": ["core", "adapter", "app-cli"] } },
+      "render": {
+        "dependencies": { "deny": ["observability", "core", "adapter", "app-web", "app-cli"] }
+      },
+      "app-web": { "dependencies": { "deny": ["observability", "core", "adapter", "app-cli"] } },
       "app-cli": {}
     }
   }

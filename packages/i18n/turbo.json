@@ -1,4 +1,4 @@
 {
   "extends": ["//"],
-  "tags": ["leaf"]
+  "tags": ["i18n"]
 }

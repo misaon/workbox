@@ -145,7 +145,7 @@ workbox/
 
 ### 4.3 Dependency rules (enforced by lint)
 
-- `protocol`, `i18n` and `observability` depend on no internal package.
+- `protocol` depends on no internal package. `i18n` and `observability` may depend only on `protocol`. `observability` is runtime-only (Bun/Node) and must never be imported by `sim`, `office-render` or `apps/web`.
 - `core` depends only on `protocol`. It uses no Bun API and no DOM so it can be tested anywhere.
 - `sim` depends only on `protocol`. Never on `office-render`, React or the DOM.
 - `harness-*`, `sandbox-host`, `store-sqlite` and `server` depend on `core` and `protocol`, never on each other.
