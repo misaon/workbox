@@ -43,3 +43,6 @@ verkit
 visualised
 binárka
 workboxu
+behaviour
+automerges
+misák

@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in Workbox does not behave as documented
+title: 'bug: '
+labels: [bug, triage]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for the report. Run `workbox doctor --json` and paste the output below.
+  - type: input
+    id: version
+    attributes:
+      label: Workbox version
+      description: Output of `workbox --version`
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options: [macOS, Linux, Windows]
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: '1. Run … 2. Open … 3. See …'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `workbox doctor --json`
+      render: json
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues and discussions
+          required: true
