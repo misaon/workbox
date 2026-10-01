@@ -55,7 +55,6 @@ catalogs:
 
 minimumReleaseAge: 4320
 minimumReleaseAgeExclude:
-  - '@anthropic-ai/claude-agent-sdk'
   # remove after 2026-10-01: turbo 2.11.5 and its platform binaries were published on 2026-09-28,
   # so they are younger than minimumReleaseAge (3 days) until then.
   - 'turbo@2.11.5'
