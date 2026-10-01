@@ -62,11 +62,21 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo run build
       - run: pnpm run build:binaries
+      - name: Verify the binary set
+        run: pnpm --filter @workbox/cli run check:dist
       - name: Checksums
         run: cd apps/cli/dist && sha256sum workbox-* > "workbox_${TAG#v}_checksums.txt"
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        id: attest
         with:
-          subject-path: apps/cli/dist/workbox-*
+          subject-path: |
+            apps/cli/dist/workbox-*
+            apps/cli/dist/workbox_*_checksums.txt
+      - name: Attach the Sigstore bundle to the release assets
+        # Scorecard's Signed-Releases check looks for a *.sigstore.json asset; the bundle also allows offline verification.
+        env:
+          BUNDLE_PATH: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$BUNDLE_PATH" "apps/cli/dist/workbox_${TAG#v}.sigstore.json"
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ github.token }}
