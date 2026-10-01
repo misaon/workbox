@@ -7,7 +7,9 @@ import {
   assert,
   boolean,
   constantFrom,
+  mixedCase,
   option,
+  oneof,
   property,
   string,
   tuple,
@@ -20,6 +22,25 @@ const whitespace = string({ unit: constantFrom(' ', '\t', '\n'), maxLength: 3 })
 const padding = tuple(whitespace, whitespace);
 const casing = array(boolean(), { minLength: 2, maxLength: 2 });
 const workboxLocaleValue = option(string(), { nil: undefined });
+
+// Values right next to a supported locale, which is where a check that has become too lenient goes
+// wrong: other letter case (EN, cS), whitespace around it, and one character substituted, deleted or
+// inserted (ex, e, een). `isLocale` is exact, so only the plain spelling of a locale counts as one.
+const caseVariant = mixedCase(supported);
+const padded = tuple(supported, padding).map(
+  ([locale, [before, after]]: readonly [string, readonly [string, string]]) =>
+    `${before}${locale}${after}`,
+);
+const oneEdit = tuple(
+  supported,
+  constantFrom(0, 1, 2),
+  constantFrom(0, 1),
+  string({ maxLength: 1 }),
+).map(
+  ([locale, index, removed, inserted]: readonly [string, number, number, string]) =>
+    `${locale.slice(0, index)}${inserted}${locale.slice(index + removed)}`,
+);
+const localeLike = oneof(anything(), supported, caseVariant, padded, oneEdit);
 
 function withCasing(locale: string, upper: readonly boolean[]): string {
   return Array.from(locale, (char, index) =>
@@ -73,7 +94,7 @@ describe('resolveLocale (properties)', () => {
 describe('isLocale (properties)', () => {
   test('accepts exactly the strings in LOCALES', () => {
     assert(
-      property(anything(), (value) => {
+      property(localeLike, (value) => {
         expect(isLocale(value)).toBe(isListedLocale(value));
       }),
     );

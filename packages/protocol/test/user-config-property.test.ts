@@ -8,17 +8,32 @@ import {
   constantFrom,
   double,
   integer,
+  mixedCase,
   oneof,
   property,
   string,
   stringMatching,
   subarray,
+  tuple,
 } from 'fast-check';
 
 import { DEFAULT_USER_CONFIG, LOCALES, parseUserConfig } from '../src/user-config.ts';
 import type { UserConfig } from '../src/user-config.ts';
 
 const topLevelKeys = Object.keys(DEFAULT_USER_CONFIG);
+
+// The schema is exact, so apart from the plain spelling of a locale none of these is accepted. Other
+// letter case (EN, cS) and whitespace around a supported locale are the near-misses that a schema which
+// lowercases or trims before the enum would let through.
+const supported = constantFrom(...LOCALES);
+const whitespace = string({ unit: constantFrom(' ', '\t', '\n'), maxLength: 3 });
+const padding = tuple(whitespace, whitespace);
+const caseVariant = mixedCase(supported);
+const padded = tuple(supported, padding).map(
+  ([locale, [before, after]]: readonly [string, readonly [string, string]]) =>
+    `${before}${locale}${after}`,
+);
+const localeCandidate = oneof(string(), supported, caseVariant, padded);
 
 /** Parses `input` and fails the property with the parser's own message when the input is rejected. */
 function parseOrThrow(input: unknown): UserConfig {
@@ -83,9 +98,8 @@ describe('parseUserConfig (properties)', () => {
   });
 
   test('a locale is accepted exactly when it is one of LOCALES', () => {
-    const candidate = oneof(string(), constantFrom(...LOCALES));
     assert(
-      property(candidate, (locale) => {
+      property(localeCandidate, (locale) => {
         const result = parseUserConfig({ locale });
         expect(result.ok).toBe((LOCALES as readonly string[]).includes(locale));
       }),
