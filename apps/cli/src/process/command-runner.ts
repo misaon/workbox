@@ -15,6 +15,9 @@
  * executable, for example) puts Bun's message on stderr.
  */
 
+import { collectOutput } from './pipe-collector.ts';
+import type { Output, Pipes } from './pipe-collector.ts';
+
 /**
  * The shell convention for "command not found"; also used when the process cannot be spawned at
  * all, and when the runner could not run the command to completion.
@@ -63,9 +66,7 @@ export interface CommandRunner {
  * What the runner reads from a started command (Bun's `Subprocess` has all of it). `exitCode` and
  * `signalCode` stay `null` until the command exits or a signal ends it.
  */
-interface StartedCommand {
-  readonly stdout: Readonly<ReadableStream<Uint8Array>>;
-  readonly stderr: Readonly<ReadableStream<Uint8Array>>;
+interface StartedCommand extends Pipes {
   readonly exited: Readonly<Promise<number>>;
   readonly exitCode: number | null;
   readonly signalCode: string | null;
@@ -101,64 +102,6 @@ function spawnCommand(command: readonly string[]) {
   } catch (error) {
     return { failure: spawnFailureText(error) };
   }
-}
-
-/** A pipe being read: all the text it delivered, or what had arrived when `cancel` was called. */
-interface Collector {
-  readonly text: Promise<string>;
-  readonly cancel: () => void;
-}
-
-/**
- * Reads the stream to its end. `cancel` stops early: the pending read then reports the end of the
- * stream, so `text` is what had arrived by then.
- */
-function collect(stream: Readonly<ReadableStream<Uint8Array>>): Collector {
-  const reader = stream.getReader();
-  const decoder = new TextDecoder();
-  // One chunk per call, so that no `await` sits in a loop.
-  const readRest = async (text: string): Promise<string> => {
-    const chunk = await reader.read();
-    if (chunk.done) {
-      return text + decoder.decode();
-    }
-    return readRest(text + decoder.decode(chunk.value, { stream: true }));
-  };
-  const cancelQuietly = async () => {
-    try {
-      await reader.cancel();
-    } catch {
-      // A stream that has failed rejects the cancel too; its pending read has rejected `text`.
-    }
-  };
-  return {
-    text: readRest(''),
-    cancel: () => {
-      void cancelQuietly();
-    },
-  };
-}
-
-/** Both pipes being read: `text` settles with `[stdout, stderr]`, and `cancel` stops both readers. */
-interface Output {
-  readonly text: Readonly<Promise<readonly [string, string]>>;
-  readonly cancel: () => void;
-}
-
-/**
- * Starts reading both pipes before anything is awaited: a command that fills a pipe nobody reads
- * blocks, so the pipes are drained while it runs.
- */
-function collectOutput(proc: StartedCommand): Output {
-  const stdout = collect(proc.stdout);
-  const stderr = collect(proc.stderr);
-  return {
-    text: Promise.all([stdout.text, stderr.text]),
-    cancel: () => {
-      stdout.cancel();
-      stderr.cancel();
-    },
-  };
 }
 
 /** Settles like `exited` once `output` has been read, and rejects as soon as reading it fails. */
