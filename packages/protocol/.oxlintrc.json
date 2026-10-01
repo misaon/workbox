@@ -19,7 +19,20 @@
   "overrides": [
     {
       "files": ["test/**"],
-      "rules": { "no-restricted-imports": "off" }
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "bun:test",
+                "importNames": ["xdescribe", "xit", "xtest"],
+                "message": "xdescribe, xit and xtest skip tests silently and Bun still exits 0 (jest/no-disabled-tests cannot see bun:test imports, so this rule guards them); use test.skipIf(condition) with a stated reason instead."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
