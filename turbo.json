@@ -22,5 +22,18 @@
       "cache": false,
       "persistent": true
     }
+  },
+  "boundaries": {
+    "tags": {
+      "leaf": {
+        "dependencies": { "deny": ["core", "adapter", "sim", "render", "app-web", "app-cli"] }
+      },
+      "core": { "dependencies": { "deny": ["adapter", "sim", "render", "app-web", "app-cli"] } },
+      "sim": { "dependencies": { "deny": ["core", "adapter", "render", "app-web", "app-cli"] } },
+      "adapter": { "dependencies": { "deny": ["adapter", "sim", "render", "app-web", "app-cli"] } },
+      "render": { "dependencies": { "deny": ["core", "adapter", "app-web", "app-cli"] } },
+      "app-web": { "dependencies": { "deny": ["core", "adapter", "app-cli"] } },
+      "app-cli": {}
+    }
   }
 }

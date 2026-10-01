@@ -1,0 +1,18 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+  },
+  "gitignore": true,
+  "globs": ["**/*.md"],
+  "ignores": [
+    "node_modules/**",
+    "docs/superpowers/research/**",
+    "docs/superpowers/**",
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+  ],
+  "noProgress": true,
+}

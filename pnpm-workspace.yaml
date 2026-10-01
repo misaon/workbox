@@ -116,6 +116,33 @@ minimumReleaseAgeExclude:
   - '@vitest/spy@5.0.3'
   - '@vitest/ui@5.0.3'
   - '@vitest/utils@5.0.3'
+  # remove after 2026-10-02: cspell 10.3.6 and the cspell packages below were published on
+  # 2026-09-29, so they are younger than minimumReleaseAge (3 days) until then.
+  - 'cspell@10.3.6'
+  - '@cspell/cspell-bundled-dicts@10.3.6'
+  - '@cspell/cspell-json-reporter@10.3.6'
+  - '@cspell/cspell-performance-monitor@10.3.6'
+  - '@cspell/cspell-pipe@10.3.6'
+  - '@cspell/cspell-resolver@10.3.6'
+  - '@cspell/cspell-service-bus@10.3.6'
+  - '@cspell/cspell-types@10.3.6'
+  - '@cspell/cspell-worker@10.3.6'
+  - '@cspell/dynamic-import@10.3.6'
+  - '@cspell/filetypes@10.3.6'
+  - '@cspell/rpc@10.3.6'
+  - '@cspell/strong-weak-map@10.3.6'
+  - '@cspell/url@10.3.6'
+  - 'cspell-config-lib@10.3.6'
+  - 'cspell-dictionary@10.3.6'
+  - 'cspell-gitignore@10.3.6'
+  - 'cspell-glob@10.3.6'
+  - 'cspell-grammar@10.3.6'
+  - 'cspell-io@10.3.6'
+  - 'cspell-lib@10.3.6'
+  - 'cspell-trie-lib@10.3.6'
+  # remove after 2026-10-03: knip 6.39.0 was published on 2026-09-30, so it is younger than
+  # minimumReleaseAge (3 days) until then.
+  - 'knip@6.39.0'
 trustPolicy: no-downgrade
 blockExoticSubdeps: true
 strictDepBuilds: true

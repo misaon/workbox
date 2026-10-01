@@ -1,0 +1,28 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "workspaces": {
+    ".": { "project": ["*.ts"] },
+    "packages/protocol": {
+      "entry": ["test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+    },
+    "packages/observability": {
+      // Fixtures are spawned as child processes by the tests, so no file imports them.
+      "entry": ["test/**/*.test.ts", "test/fixtures/*.ts"],
+      "project": ["src/**/*.ts", "test/**/*.ts"],
+    },
+    "packages/i18n": {
+      "entry": ["test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"],
+    },
+    "apps/cli": {
+      "entry": ["test/**/*.test.ts"],
+      "project": ["src/**/*.ts", "scripts/**/*.ts", "test/**/*.ts"],
+    },
+    "apps/web": {
+      "entry": ["src/**/*.test.tsx"],
+      // CSS is a project file so that knip follows `@import 'tailwindcss'` in index.css.
+      "project": ["src/**/*.{ts,tsx,css}"],
+    },
+  },
+}
