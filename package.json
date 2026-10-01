@@ -1,6 +1,6 @@
 {
   "name": "workbox-monorepo",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Workbox: an open-source, local-first orchestrator for AI coding agents, visualised as a pixel-art office.",
   "license": "Apache-2.0",
